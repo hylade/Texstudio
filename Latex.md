@@ -230,8 +230,7 @@ Date：2018.4.16
 ```latex
 \begin{IEEEeqnarray}{rCl}
   a & = & b + c \\
-  & = & d + e + f + g + h
-  + i + j + k \nonumber\\
+  & = & d + e + f + g + h + i + j + k \nonumber\\
   && +\> l + m + n + o \\
   & = & p + q + r + s
 \end{IEEEeqnarray}
@@ -335,6 +334,7 @@ a + b + c + d + e + f
 & = & k + l + m
 \end{IEEEeqnarray}
 %第一个参数{3}表示将三列合并为1列，并且根据第二个参数{l}，公式左对齐
+%其中"\label"里是该公式的标签，将会在引用该公式时用到
 ```
 
 
