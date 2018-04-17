@@ -353,3 +353,57 @@ a & = & b + c
 %在多行情况中，一行开始位置的"+"、"-"都被认为是一个信号，需要在符号和字符之间添加"\>"
 ```
 
+
+
+在IEEEeqnarray中，对一元运算符和二元运算符往往难以辨别，当系统采用binary operator时，往往符号后面的空白会较大，而对于unary operator空间较小；unary的使用是正确的
+
+要强制执行一元运算符，将一元运算符和/或一元运算符本身后面的表达式括入大括号{...}通常会起作用
+
+需要采用binary operator时，可以在需要的地方添加```\>```
+
+```latex
+\begin{IEEEeqnarray*}{rCl’s}
+a & = & - b - b - c
+& (default unary) \\
+& = & {-} {b} - b - c
+& (default unary, no effect) \\
+& = & -\> b - b - c
+& (changed to binary) \\
+& = & - \log b - b - d
+& (default binary) \\
+& = & {-} {\log b} - b - d
+& (changed to unary) \\
+& = & - \log b - b {-} d
+& (changed $-d$ to unary)
+\end{IEEEeqnarray*}
+```
+
+
+
+```latex
+%对于IEEEeqnarray，将自动给公式编号，可以使用对IEEEeqnarray*可以取消所有编号
+\IEEEyesnumber and \IEEEnonumber (or \nonumber).
+%当需要给公式编号给出一个更小级别的编号时
+\IEEEyessubnumber and \IEEEnosubnumber
+%上述两种方法只能作用于语句被使用的代码中
+%-----------------------------------------------------------------------------------------
+\IEEEyesnumber*, \IEEEnonumber*,
+\IEEEyessubnumber*, \IEEEnosubnumber*
+%上述代码可以一直作用至IEEEeqnarray环境使用完毕，或者另一个星级命令被使用
+%-----------------------------------------------------------------------------------------
+%当需要大小编号都更换时，不能只输入"\IEEEyesnumber"，需要同时激活"\IEEEyessubnumber*"
+\IEEEyesnumber
+\IEEEyessubnumber*\\
+%或者：
+\IEEEyesnumber\label{eq:block}
+\IEEEyessubnumber*
+%此时对于需要
+```
+
+```latex
+%-----------------------------------------------------------------------------------------
+Date：2018.4.17
+```
+
+------
+
