@@ -84,3 +84,272 @@ publisher ="出版社名称"
 
 按住```ctrl```，单击文字即可
 
+```latex
+%----------------------------------------------------------------------------------------
+Date：2018.4.16
+```
+
+------
+
+
+
+## 算法代码排版——latex2e使用
+
+```latex
+\documentclass{article}
+\usepackage[ruled]{algorithm2e}                 %算法排版样式1
+%\usepackage[ruled,vlined]{algorithm2e}          %算法排版样式2
+%\usepackage[linesnumbered,boxed]{algorithm2e}   %算法排版样式3
+    
+ \begin{document}
+    How to use the algorithm2e in \LaTeX ~ file.
+    Examples: 
+%    ------------------------------Example - 1-------------------------------------------
+        \begin{algorithm}[H]
+            \caption{How to write algorithms}
+            \KwIn{this text}
+            \KwOut{how to write algorithm with \LaTeX2e }
+            
+            initialization\;
+            \While{not at end of this document}{
+                read current\;
+                \eIf{understand}
+                {
+                        go to next section\;
+                        current section becomes this one\;
+                }
+                {
+                    go back to the beginning of current section\;
+                }
+        }
+    \end{algorithm}
+    
+%    ---------------------------Example - 2----------------------------------------------
+    \begin{algorithm} 
+%    \SetAlgoNoLine  %去掉之前的竖线
+     \caption{identifyRowContext} 
+      \KwIn{$r_i$, $Backgrd(T_i)$=${T_1,T_2,\ldots ,T_n}$ and similarity threshold $\theta_r$} 
+      \KwOut{$con(r_i)$} 
+        $con(r_i)= \Phi$\; 
+        \For{$j=1;j \le n;j \ne i$} 
+        { 
+            float $maxSim=0$\; 
+            $r^{maxSim}=null$\; 
+            \While{not end of $T_j$} 
+            { 
+                compute Jaro($r_i,r_m$)($r_m\in T_j$)\; 
+                \If{$(Jaro(r_i,r_m) \ge \theta_r)\wedge (Jaro(r_i,r_m)\ge r^{maxSim})$} 
+                { 
+                    replace $r^{maxSim}$ with $r_m$\; 
+                } 
+            } 
+            $con(r_i)=con(r_i)\cup {r^{maxSim}}$\; 
+        } 
+        return $con(r_i)$\; 
+    \end{algorithm}
+    %------------------------------------------------------------------------------------
+\end{document}
+```
+
+```latex
+%当需要更改Input为输入，更改Output为输出时，需在算法内部插入
+\SetKwInout{KIN}{输入}
+\SetKwInout{KOUT}{输出}
+%并用"\KIN"替代之前的"\KwIn","\KOUT"替代"\KwOut"
+%上述方法需要在中文模式下进行，即需要在开始处添加"\usepackage{ctex}"
+```
+
+
+
+## 如何排列公式美观
+
+```latex
+%对于较短的公式，可以使用"\align"的方式
+\begin{align}
+  a & = b + c \\
+  & = d + e
+\end{align}
+%但对于较长的公式，此时再使用"\align"的方式，则由于一行排不下如此多的字符，将换行，此时将产生问题
+\begin{align}
+  a & = b + c \\
+  & = d + e + f + g + h + i
+  + j + k + l \nonumber\\
+  & + m + n + o \\
+  & = p + q + r + s
+\end{align}
+
+%虽然可以使用"\hspace{}"来使相应的字符对齐，但仍不精准，此时可以使用"eqnarray"
+\begin{eqnarray}
+  a & = & b + c \\
+  & = & d + e + f + g + h + i
+  + j + k + l \nonumber\\
+  && +\> m + n + o \\
+  & = & p + q + r + s
+\end{eqnarray}
+
+%但eqnarray仍然具有一些缺点
+%1.等号两边的空间过大
+\begin{eqnarray}
+  a & = & a = a
+\end{eqnarray}
+
+%2.表达式有时会与公式序号接触，即使左边的空间充足
+\begin{eqnarray}
+  a & = & b + c\\
+  & = & d + e + f + g + h^2
+  + i^2 + j
+\label{eq:faultyeqnarray}
+\end{eqnarray}
+
+%3.当等式左边字符较多时，eqnarray环境提供了"\lefteqn{}"方法，但当等式右侧字符较少时，公式整体将不再居中
+\begin{eqnarray}
+\lefteqn{a + b + c + d + e + f + g + h}\nonumber\\
+  & = & i + j + k + l + m \\
+  & = & n + o + p + q + r + s
+\end{eqnarray}    %此时等式右侧较长，较为美观
+
+\begin{eqnarray}
+\lefteqn{a + b + c + d + e + f + g + h} \nonumber\\
+  & = & i + j
+\end{eqnarray}    %此时等式右侧较短，极其丑陋
+%----------------------------------------------------------------------------------------
+%说了这么多，总结的结论竟然是不要使用eqnarray环境
+```
+
+
+
+那应该使用什么来使等式美观呢？使用IEEEeqnarray
+
+```latex
+%首先先要include IEEEarray工具包
+\usepackage{IEEEtrantools}
+```
+
+对于IEEEeqnarray，可以规定作用的列数，使第一列右对齐，使中间列居中，并且具有稍大的空间，使第三列左对齐
+
+```latex
+\begin{IEEEeqnarray}{rCl}
+  a & = & b + c \\
+  & = & d + e + f + g + h
+  + i + j + k \nonumber\\
+  && +\> l + m + n + o \\
+  & = & p + q + r + s
+\end{IEEEeqnarray}
+```
+
+但我们可以规定具体的列数，如```{c}```只会产生一列，```{rCl"l}```将会产生第四列，且第三列将不会左对齐，而第四列将左对齐，第三列与第四列之间的空间，由```"```来确定
+
+
+
+```latex
+%对于equation方式，当等式较长时，公式序号可能会被强制挤到下一行，即使上一行还有空间
+\begin{equation}
+a = \sum_{k=1}^n\sum_{\ell=1}^n \sin \bigl(2\pi \, b_k \, c_{\ell} \, d_k \, e_{\ell} \,
+f_k \, g_{\ell} \, h \bigr)
+\end{equation}
+```
+
+这种情对于```IEEEeqnarray```不会发生，我们可以控制公式序号存在位置
+
+```latex
+\begin{IEEEeqnarray}{c}
+a = \sum_{k=1}^n\sum_{\ell=1}^n \sin \bigl(2\pi \, b_k \, c_{\ell} \, d_k \, e_{\ell} \,
+f_k \, g_{\ell} \, h \bigr)
+\IEEEeqnarraynumspace
+\label{eq:labelc1}
+\end{IEEEeqnarray}
+%or
+
+\begin{IEEEeqnarray}{c}
+a = \sum_{k=1}^n\sum_{\ell=1}^n \sin \bigl(2\pi \, b_k \, c_{\ell} \, d_k \, e_{\ell} \,
+f_k \, g_{\ell} \, h \bigr)
+\nonumber\\*
+\label{eq:labelc2}
+\end{IEEEeqnarray}
+```
+
+
+
+```latex
+%对于equation，公式序号样式并不会根据字符环境变化
+\textbf{\textit{\color{red}
+  This is our main result:
+\begin{equation}
+  a = b + c
+\end{equation}
+
+%对于IEEEeqnarray，此时公式编号将发生相应的变化，较为美观
+
+\textbf{\textit{\color{red}
+  This is our main result:
+\begin{IEEEeqnarray}{c}
+  a = b + c
+\end{IEEEeqnarray}}}
+```
+
+同时，也可以使IEEEeqnarray写法与equation写法相同
+
+```latex
+\renewcommand{\theequationdis}{{\normalfont (\theequation)}}
+\renewcommand{\theIEEEsubequationdis}{{\normalfont (\theIEEEsubequation)}}
+\textbf{\textit{\color{red}
+This is our main result:
+\begin{IEEEeqnarray}{rCl}
+a & = & b + c \\
+& = & d + e \IEEEyesnumber
+\IEEEyessubnumber
+\end{IEEEeqnarray}}}
+```
+
+
+
+对于多行等式的情况，需要```\IEEEeqnarraymulticol```
+
+```latex
+\begin{IEEEeqnarray*}{l}
+a + b + c + d + e + f
+\\ \qquad
++\> g + h + i + j + k + l
+\qquad \\
+\IEEEeqnarraymulticol{1}{r}{
++\> m + n + o + p + q }
+\IEEEyesnumber
+\end{IEEEeqnarray*}
+```
+
+
+
+当在IEEEeqnarray中，若公式与公式编号重叠时，可以使用```\IEEEeqnarraynumspace```
+
+
+
+```latex
+\begin{IEEEeqnarray}{rCl}
+\IEEEeqnarraymulticol{3}{l}{
+a + b + c + d + e + f
++ g + h
+}\nonumber\\* \qquad\qquad
+& = & i + j
+\label{eq:label45}
+\\
+& = & k + l + m
+\end{IEEEeqnarray}
+%第一个参数{3}表示将三列合并为1列，并且根据第二个参数{l}，公式左对齐
+```
+
+
+
+```latex
+\begin{IEEEeqnarray}{rCl}
+a & = & b + c
+\\
+& = & d + e + f + g + h
++ i + j + k \nonumber\\
+&& +\> l + m + n + o
+\label{eq:add_space}
+\\
+& = & p + q + r + s
+\end{IEEEeqnarray}
+%在多行情况中，一行开始位置的"+"、"-"都被认为是一个信号，需要在符号和字符之间添加"\>"
+```
+
