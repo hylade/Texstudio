@@ -407,3 +407,88 @@ Date：2018.4.17
 
 ------
 
+## 图片处理
+
+Tex支持eps格式的矢量图
+
+### eps图片的制作
+
+①用Microsoft Office 中的Word或者Visio画出你需要的图形，将其另存为pdf文件。注意要一副图生成一个只有一页的pdf文件
+
+②用Adobe Acrobat Professional打开该pdf文件，选择【工具】→【页面】→【剪裁】，设定好想要留下的区域（左图），双击，得到不含大片空白的pdf图片文件
+
+③将剪裁好的pdf另存为eps格式，在另存对话框的下面有一个设置选项，设置里面一些参数，将一般的PostScript设为语言级三级，字体范围设为嵌入和引用的字体，然后确定保存
+
+
+
+### eps图片的插入
+
+当eps文件与Tex文件不在同一文件夹中时，需要在开头定义图片存储位置
+
+```latex
+\graghicspath{{../}}
+```
+
+图片插入示例：
+
+```latex
+\begin{figure}[ht]
+\begin{flushleft}    %用于图片左对齐
+
+\includegraphics[width=6cm,height=3.4cm]{SSDArchitecture.eps}	%图片长宽值可以省略，图片即为原大小；当只设定其中之一时，图片以长宽比不变的方式出现
+
+\end{flushleft}
+\caption{SSD Architecture}\label{fig:SSDArchitecture}	%设置图片标题，并使其称为label；
+\end{figure}
+```
+
+[ht]设置图片位置的参数，共有h、t、b、p四种，详见
+
+[图片位置]: http://www.ctex.org/documents/latex/graphics/node64.html
+
+
+
+### 竖排图形
+
+```latex
+%注意使用\usepackage{graghicx}和\usepackage{subfigure}两个宏包
+%由于IEEE给的是图形横排，且subfigure不支持\\换行，所以将minipage置入subfigure(）中，使其得以换行
+\begin{figure}
+\centering
+\subfigure[the first subfigure]{
+\begin{minipage}[b]{0.2\textwidth}
+\includegraphics[width=1\textwidth]{fig1.eps} \\
+\includegraphics[width=1\textwidth]{fig2.eps}
+\end{minipage}
+}	%fig1和fig2竖向排列
+\subfigure[the second subfigure]{
+\begin{minipage}[b]{0.2\textwidth}
+\includegraphics[width=1\textwidth]{fig3.eps} \\
+\includegraphics[width=1\textwidth]{fig4.eps}
+\end{minipage}
+}	%fig3和fig4竖向排列
+\end{figure}	%fig1和fig3，fig2和fig4横向排列
+```
+
+
+
+### 横排图形
+
+```latex
+%注意使用\usepackage{graphicx}和\usepackage{subfigure}
+\begin{figure}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=2.2in]{fig1.eps}
+\caption{fig1}
+\label{fig:side:a}
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=2.2in]{fig2.eps}
+\caption{fig2}
+\label{fig:side:b}
+\end{minipage}
+\end{figure}
+```
+
