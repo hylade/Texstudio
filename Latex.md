@@ -492,3 +492,332 @@ Tex支持eps格式的矢量图
 \end{figure}
 ```
 
+```latex
+%--------------------------------------------------------------------------
+2018.4.18
+```
+
+------
+
+##页眉页脚设置
+
+```latex
+%使用fancyhdr宏包设置页眉和页脚
+\usepackage{fancyhdr}
+
+%设置plain style的属性
+\fancypagestyle{plain}
+\fancyhf{}	%清空当前设置
+
+%设置页眉
+\fancyhead[RE]{\leftmark}	%在偶数页的右侧显示章名
+\fancyhead[LO]{\rightmark}	%在奇数页的左侧显示小节名
+\fancyhead[LE,RO]{~\thepage~}	%在偶数页的左侧，奇数页的右侧显示页码
+
+%设置页脚：在每页的右下脚以斜体显示书名
+\fancyfoot[RO,RE]{\it 书名}	%当不存在"\it"时，斜体将消失
+\renewcommand{\headrulewidth}{0.7pt}	%页眉与正文之间的水平线粗细
+\renewcommand{\footrulewidth}{0pt}	
+\pagestyle{fancy}	%选用fancy style
+```
+
+
+
+## 添加脚注
+
+```latex
+%利用脚注命令\footnote{}
+\usepackage{footmisc}
+\footnote[number]{脚注内容}	%对于number可选参数而言，只能用来改变缺省的脚注编号。这个命令只适用于一般的文本段落，而不能在图形、报表等环境中使用
+
+%一般使用脚注只需要在首页添加作者信息等，故不需要额外的宏包，但此时添加的脚注自动编号，且首行缩进
+%由于一般论文不需要首行缩进，可以引入footmisc宏包，并使用marginal取消首行缩进
+\usepackage[marginal]{footmisc}
+
+\renewcommand{\thefootnote}{}	%取消脚注自动编号
+```
+
+
+
+```latex
+%若希望在article文档中，每当开始新的一节时，脚注编号重置为1，则需要在"\section"命令前面或后面加入如下命令
+\setcounter{footnote}{0}
+
+%--------------------------------------------------------------------------
+%当需要在报表、数字模式等\footnote命令不能使用的地方使用时，可以使用\footnotemark命令
+\footnotemark[number]	%这条命令在文本中输出脚注的编号，内容由\footnotetext{}命令给出
+
+\footnotetext[number]{文本}	%可以在\footnotemark命令之后任何时候使用，但是\footnote语句不能使用的地方它也不能使用
+```
+
+
+
+## 表格内公式换行
+
+```latex
+%首先在表格开头处置入以下代码
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}} 
+
+%其次就可以使用"\tabincell{c}{}"插入相应的内容
+\documentclass[a4paper,12pt]{article}
+\begin{document}
+
+\begin{table}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}  %导言区
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+1 & \tabincell{c}{the first line \\ the next\\the next\\ last} & \tabincell{c}{one \\ one}\\ %换行,单元格内的每个元素用\tabincell{c}{放表格内容}
+\hline
+2 & \tabincell{c}{hello\\ aha\\ ok \\yes \\en} & \tabincell{c}{two \\ two \\ two} \\
+\hline
+\end{tabular}
+
+\caption{longtitle}
+\end{table}
+\end{document}
+```
+
+
+
+## 彩色表格
+
+```latex
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{xcolor}
+\usepackage{colortbl, booktabs}
+\begin{document}
+\begin{table}  
+	\centering  
+	\caption{彩色的表格}	%输入表格名  
+	\begin{tabular}  
+		{>{\columncolor{blue}}rccccc}	%将表的第一列变为蓝色，同时由tabular定义了各列名的位置
+		\toprule[1pt]	%第一根横线的宽度  
+		\rowcolor[gray]{0.5}    &1 &2   &3  &4  &5\\	%将该行的颜色为灰色，且能根据数值大小进行调整  
+		\midrule	%设置第二根横线  
+		A   &\multicolumn{1}{>{\columncolor{green}[0pt][0pt]}c}{318.3}   &327.8  &152.0  &104.9  &135.8\\	%第一个参数{1}用于指定跨越的列数，\columncolor{}[][]的第一个参数用于指定填充的颜色，第二和第三个参数用于指定填充色彩伸出内容的长度
+		B   &&\multicolumn{1}{>{\columncolor{red}[0pt][0pt]}r}{335.5}    &137.7  &290.9  &198.6\\ 
+		\bottomrule[1pt]	%设置表格底线的宽度为1pt  
+	\end{tabular}  
+\end{table} 
+\end{document}
+```
+
+
+
+## 设置表格总长
+
+```latex
+%此时不能使用"tabular"，此时需要使用"tabular*"
+\begin{taular*}{12cm}{lll}
+……
+\end{tabular*}
+%此时，若前几列有剩余的空间，都归最后一列所有
+```
+
+
+
+##表格内自动换行
+
+```latex
+\begin{table}  
+\Large  
+\caption{自动换行}  
+\begin{center}	%创造一个居中环境
+\begin{tabular}{|l|l|l|l| p{5cm}|}	%用于创建表格，且限制最后一列表格的宽度，从而表格会自动调整字符内容
+\hline  
+Item & Name & Gender & Habit & Self-introduction \\ \hline  
+1 & Jimmy & Male & Badminton & Hi, everyone,my name is Jimmy. I come from Hamilton,and it's my great honour to give this example. My topic is about how to use p{width} command \\ \hline  
+2 & Jimmy & Male & Badminton & Hi, everyone,my name is Jimmy. I come from Hamilton,and it's my great honour to give this example. My topic is about how to use p{width} command \\  
+\hline  
+\end{tabular}  
+\end{center}  
+\end{table}  
+```
+
+
+
+## 设置表格宽度
+
+```latex
+\begin{table}  
+\caption{表格宽度X}  
+\begin{tabularx}{10cm}{llX}  % 10cm 减去前列宽度后，剩下的通通给第三列，且当第三列中文字内容较多，会自动分行  
+\hline                        
+Start & End  & Character Block Name  \\  
+\hline  
+3400  & 4DB5 & CJK Unified Ideographs Extension A \\  
+4E00  & 9FFF & CJK Unified Ideographs \\  
+\hline  
+\end{tabularx}  
+\end{table} 
+%--------------------------------------------------------------------------
+%tabularx其他内容
+\begin{tabularx}{10.5cm}{|X|X|X|} %表格总宽度为10.5cm，共3列，宽度均相同。每列宽度为10.5/3＝3.5。是自动计算出来的。如果将上面表将的设置改为
+\begin{tabularx}{\linewidth}{|p{3cm}|X|X|}	%则表格的总宽度是行宽，第1列列宽为3cm，其他两列的列宽自动计算
+\begin{tabular}{p{3.5cm}|p{2cm}|p{5cm}}	%设置了每一列的宽度，强制转换，通过这种方法可以改变任一列宽
+```
+
+
+
+## tabu包使用
+
+```latex
+\begin{table}  
+\caption{tab包用法}  
+\begin{center}  
+\begin{tabu} to 0.8\textwidth{X[c]|X[3,b]|X[2,l]|X[c]|X[3,m]|X[1,c]}  
+%0.8\textwidth 为设置表格宽度  
+%X[c]表示这一列居中，所占比例为1，相当于X[1,c]  
+%X[3,c]表示这一列居中，所占比例为3，这列的宽度是X[c]列的3倍
+%X[3,b]表示这一列宽度比例为3，且文本底对齐
+%X[3,m]表示这一列宽度比例为3，且文本居中对齐
+%X[3,p]表示这一列宽度比例为3，且文本顶对齐
+\hline  
+i  &xi              &ni      &i    &xi               &ni\\  
+\hline  
+1    &0.5∼0.64       &1           &8    &1.48∼1.62      &53\\ 
+……  \\
+\end{tabu}  
+\end{center}  
+\end{table}  
+%--------------------------------------------------------------------------
+%表中公式输入需要加括号
+```
+
+
+
+## 水平居中显示
+
+```latex
+	\begin{tabular}{ll}  
+		\\[-2mm]  
+		\hline  
+		\hline\\[-1mm]  
+		{\bf \small Symbol}&\qquad {\bf\small Meaning}\\	%"\bf"用于字符加粗；"\small"用于调整字符大小  
+		\hline  
+		\vspace{2mm}\\[-3mm]	%"\vspace"用于调整水平空白空间  
+		PMi      &   \tabincell{l}{The ith physical machine or host server in the data \\center, i = 1, 2, ?-}\\    
+		\hline  
+		\hline  
+	\end{tabular}  
+```
+
+
+
+## 表头与内容分离
+
+```latex
+\newcommand{\tabincell}[2]
+{
+	\begin{tabular}{@{}#1@{}}#2\end{tabular}
+}  
+\renewcommand{\arraystretch}{1.5}	%用于改变格子的大小
+\begin{table}[tp]	
+	\centering  
+	\fontsize{6.5}{8}\selectfont	%\fontsize{}{}用于改变字体大小，第一个参数用于确定字号，第二个参数用于确定行距
+	\caption{Demographic Prediction performance comparison by }  
+	\label{tab:performance_comparison}  
+	\begin{tabular}{|c|c|c|c|c|c|c|}  
+		\hline  
+		\multirow{2}{*}{Method}&	%\multirow{}第一个参数用于将多行合并为1行
+		\multicolumn{3}{c|}{C}&\multicolumn{3}{c|}{ D}\cr\cline{2-7}	%\cr等效于"\\"，用于换行；\cline{n-m}用于从某列开始划线  
+		&Precision&Recall&F1-Measure&Precision&Recall&F1-Measure\cr  
+		\hline  
+		\hline  
+		A&0.7324&0.7388&0.7301&0.6371&0.6462&0.6568\cr\hline  
+		B&0.7321&0.7385&0.7323&0.6363&0.6462&0.6559\cr\hline  
+		C&0.7321&0.7222&0.7311&0.6243&0.6227&0.6570\cr\hline  
+		D&0.7654&0.7716&0.7699&0.6695&0.6684&0.6642\cr\hline  
+		E&0.7435&0.7317&0.7343&0.6386&0.6488&0.6435\cr\hline  
+		F&0.7667&0.7644&0.7646&0.6609&0.6687&0.6574\cr\hline  
+		G&{\bf 0.8189}&{\bf 0.8139}&{\bf 0.8146}&{\bf 0.6971}&{\bf 0.6904}&{\bf 0.6935}\cr  
+		\hline  
+	\end{tabular}  
+\end{table}
+```
+
+
+
+## 三线表
+
+```latex
+\usepackage{booktabs}  
+\usepackage{threeparttable}  
+  
+\renewcommand{\arraystretch}{1.5} %控制行高  
+\begin{table}[tp]  
+  \centering  
+  \fontsize{6.5}{8}\selectfont  %\selectfont用于选择已调整的字体，也就是说，当用\fontsize改变字体、行距后，需要加上\selectfont来使其应用，不然不会产生作用
+  \begin{threeparttable}  
+  \caption{Demographic Prediction performance comparison by three evaluation metrics.}  
+  \label{tab:performance_comparison}  
+    \begin{tabular}{ccccccc}  
+    \toprule  
+    \multirow{2}{*}{Method}&  
+    \multicolumn{3}{c}{ G}&\multicolumn{3}{c}{ G}\cr  
+    \cmidrule(lr){2-4} \cmidrule(lr){5-7}	%\cmidrule(){}第一个参数用于控制方向，从左往右；第二个参数用于控制划横线的范围，即使只划一个格子，也需要些{1-1}
+    &Precision&Recall&F1-Measure&Precision&Recall&F1-Measure\cr  
+    \midrule  
+    kNN&0.7324&0.7388&0.7301&0.6371&0.6462&0.6568\cr  
+    F&0.7321&0.7385&0.7323&0.6363&0.6462&0.6559\cr  
+    E&0.7321&0.7222&0.7311&0.6243&0.6227&0.6570\cr  
+    D&0.7654&0.7716&0.7699&0.6695&0.6684&0.6642\cr  
+    C&0.7435&0.7317&0.7343&0.6386&0.6488&0.6435\cr  
+    B&0.7667&0.7644&0.7646&0.6609&0.6687&0.6574\cr  
+    A&{\bf 0.8189}&{\bf 0.8139}&{\bf 0.8146}&{\bf 0.6971}&{\bf 0.6904}&{\bf 0.6935}\cr  
+    \bottomrule  
+    \end{tabular}  
+    \end{threeparttable}  
+\end{table}  
+```
+
+
+
+##将表作为图的内容
+
+```latex
+\renewcommand{\arraystretch}{1.2}  
+\begin{figure}%[]  
+	\centering  
+	\centerline{\bf (a). CDR samples}	%\centerline{}可以使一行文本居中，但在Texstudio中好像不行
+	\vspace{1.5mm}  
+	\begin{tabular}{|l|c|c|}  
+		\hline  
+		\cline{1-1}  
+		\underline{\textbf{record-id}} & \textbf{caller-id} & \textbf{callee-id} \\\hline   
+		1                                              & \#user-1           & \#user-2           \\\hline  
+		2                                              & \#user-1           & \#user-4           \\\hline  
+		3                                              & \#user-2           & \#user-1           \\\hline  
+		4                                              & \#user3            & \#user-5\\\hline  
+		5                                              & \#user1            & \#user-2\\\hline  
+		\vdots                                             & \vdots           & \vdots\\\hline  
+	\end{tabular}  
+	
+	\vspace{3mm}  
+	\centering  
+	\centerline{\bf (b). DTR samples}  
+	\vspace{1.5mm}  
+	\begin{tabular}{|l|c|c|c|}  
+		\hline  
+		\cline{1-1}  
+		\textbf{record-id} & \textbf{user-id} & \textbf{online-time} & \textbf{offline-time} \\\hline  
+		1    & \#user-1           & \#timestamp-1  & \#timestamp-2           \\\hline  
+		2    & \#user-2           & \#timestamp-3  & \#timestamp-4           \\\hline  
+		3    & \#user-2           & \#timestamp-5  & \#timestamp-6           \\\hline  
+		4    & \#user3            & \#timestamp-7  & \#timestamp-8           \\\hline  
+		\vdots & \vdots           & \vdots          &\vdots\\\hline  
+	\end{tabular}  
+	\vspace{1.5mm}  
+	\caption{CDR (Call Detail Records) and DTR (Data Traffic Records) samples.}  
+\end{figure}
+```
+
+```latex
+%--------------------------------------------------------------------------
+2018.4.19
+```
+
+------
+
