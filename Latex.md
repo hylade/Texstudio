@@ -515,10 +515,39 @@ Tex支持eps格式的矢量图
 \fancyhead[LE,RO]{~\thepage~}	%在偶数页的左侧，奇数页的右侧显示页码
 
 %设置页脚：在每页的右下脚以斜体显示书名
-\fancyfoot[RO,RE]{\it 书名}	%当不存在"\it"时，斜体将消失
+\fancyfoot[RO,RE]{\it 书名}	%"\it"采用意大利字体
 \renewcommand{\headrulewidth}{0.7pt}	%页眉与正文之间的水平线粗细
 \renewcommand{\footrulewidth}{0pt}	
 \pagestyle{fancy}	%选用fancy style
+
+%---------------------------------------------------------------------------
+$下面内容有待考察
+%当不使用fancyhdr包时
+%页眉版式命令
+\pagestyle{options}	%选项有plain（空头注，页码在脚注区）；empty（空头注，空脚注）；headings（头注由文献形式确定，article节号和页作为头注）；myheadings（头注内容自定义，没有脚注）单面输出可用：\markright{右页眉内容}，\markleft{左页眉内容}
+
+%若双面输出可用
+\markboth{左页头注内容}{右页头注内容}
+
+%当只想改变一页的页眉版式，将控制命令改为
+\thispagestyle{页眉排版方式}
+
+%对于头注命令，包括
+\topmargin size	%边距命令
+\headheight size	%头注区高度命令
+\headsep size	%头注区底部到正文顶部的距离
+
+%对于脚注命令，包括
+\footnote[num编号]{脚注内容}	%脚注内容命令
+\footheight size	%脚注高度命令
+\footskip size	%脚注定位命令（脚注区底部与正文底部之间的距离）
+\footnotesep size	%脚注间距命令（脚注区的脚注内容行之间的间距）
+
+%对于边注命令，包括
+\marginparwidth size	%边注区宽度命令（ 页边到注释的宽度）
+\marginparsep size	%边注与正文间距命令（页边注释区与正文边缘之间的距离）
+\marginparpush size	%边注间距命令（多个边注之间的垂直间距）
+\marginpar{边注内容}	%边注命令
 ```
 
 
@@ -695,7 +724,7 @@ i  &xi              &ni      &i    &xi               &ni\\
 		\\[-2mm]  
 		\hline  
 		\hline\\[-1mm]  
-		{\bf \small Symbol}&\qquad {\bf\small Meaning}\\	%"\bf"用于字符加粗；"\small"用于调整字符大小  
+		{\bf \small Symbol}&\qquad {\bf\small Meaning}\\	%"\bf"用于显示为黑体字；"\small"用于调整字符大小  
 		\hline  
 		\vspace{2mm}\\[-3mm]	%"\vspace"用于调整水平空白空间  
 		PMi      &   \tabincell{l}{The ith physical machine or host server in the data \\center, i = 1, 2, ?-}\\    
@@ -820,4 +849,227 @@ i  &xi              &ni      &i    &xi               &ni\\
 ```
 
 ------
+
+
+
+## SCI英文论文写作
+
+```latex
+%设置行间距
+\setlength{\baselineskip}{?pt}
+\renewcommand{\baselinestretch}{?}	%需要放在导言区
+```
+
+
+
+```latex
+%去掉容差报警的方法
+\hbadness = 10000
+\tolerance = 10000
+\hfuzz = 150pt
+```
+
+
+
+```latex
+%给字符下添加波浪线等
+%需要先添加宏包:ulem
+\usepackage{ulem}
+\d G	%给G下加点
+\xout	%斜删除线
+\sout	%水平删除线
+\uwave	%波浪线
+\uline	%下划线
+\uuline	%双下划线
+```
+
+
+
+```latex
+%插入代码并调整字体格式等
+\usepackage{color}
+\usepackage{listings}
+%首先需要引用两个宏包
+
+\definecolor{gray}{rgb}{0.8,0.8,0.8}	%用于定义灰色
+\lstset{numbers=left	%在左侧显示行号
+\lstset{language=C++}	%设置语言
+\lstset{breaklines}    %自动将长代码换行
+\lstset{extendedchars=false}	%防止代码换页时，与标题、章节、页眉等产生冲突
+\lstset{backgroundcolor=\color{gray}}	%设置背景颜色
+\lstset{keywordstyle=\color{blue}\bfseries}    %设置关键字颜色并加粗
+\lstset{frame=none}    %不显示背景边框
+\lstset{tabsize=4}    %设置tab代表的空格数
+\lstset{commentstyle=\color{red}}	%设置代码注释的格式
+\lstset{stringstyle=\emph}	%设置字符串格式
+\lstset{showstringspaces=false}    %不显示字符串中的空格
+\lstset{frame = shadowbox}	%将代码用带有阴影的盒子包裹起来
+\lstset{rulesepcolor=\color{red}}	%代码块边框为淡青色
+\lstset{numberstyle=\tiny} %行号字体用小号
+```
+
+
+
+
+
+## itemize环境
+
+```latex
+%该环境用于条款列举，被列举的条款由一个实心圆标记
+\begin{itemize}
+	\item <条目1>
+	\item <条目2>	%输出时为"·<条目2>"
+\end{itemize}
+```
+
+
+
+## enumerate环境
+
+```latex
+%该环境用于条款列举，被列举的条款与itemize中不同，由数字引导
+%可以多重嵌套
+\begin{enumerate}
+	\item <条目1>	%输出"1.<条目1>"
+		\begin{enumerate}
+			\item <条目1>	%输出"(a).<条目1>"
+		\end{enumerate}
+	\item <2>	%输出"2.<2>"
+\end{enumerate}
+
+%Latex可以自动处理四重enumerate嵌套，编号规则为第一级自然数，第二级(a),(b)，第三级编号为小写罗马数字i，ii，第四级为A,B
+```
+
+
+
+## tabbing环境
+
+```latex
+%用于制作无线框表格，不能逐级嵌套使用
+\begin{tabbing}
+	<表文内容>
+\end{tabbing}
+%实例：
+\documentclass[12pt]{article}
+\usepackage{ctex}
+\begin{document}
+	\begin{tabbing}	%制表位控制行：每个制表位用\=表示，第一个制表位默认，不需加\=，如下命令中\hspace*{100bp}就是第一个制表位，这个制表位表示这里是空白
+			\hspace*{100bp}\=article\quad \=文章类\kill	%制表位正文行：跳格\>用来跳到下一个制表位，第一个制表位也不需要使用跳格命令
+			\>book    \>书籍类\\
+			\>report  \>报告类\\
+			\>article \>文章类\\
+			\>letter  \>书信类
+	\end{tabbing}	
+	\begin{tabbing}	%如下一行称为样本行，样本行末尾不能以\\结尾，必须以\kill结束，这行仅用来设置制表位，不被显示
+			朝代\hspace*{20bp} \=诗人\hspace*{20bp} \=代表作\kill
+			%tabbing环境不会自动分行，换行必须以\\实现
+			唐朝  \>李白  \>将进酒\\
+			唐朝  \>杜甫  \>石门吏\\
+			宋朝  \>苏轼  \>水调歌头
+	\end{tabbing}
+%\' 和 \` 的作用：\'左对齐；\`右对齐
+	\begin{tabbing}
+			朝代\hspace*{20bp} \=诗人\hspace*{20bp} \=代表作\kill
+			朝代\'  \>诗人  \>代表作\\
+			唐朝  \>李白  \`\>将进酒\\
+			唐朝  \>杜甫\'  \>石门吏\\
+			宋朝  \>苏轼  \`水调歌头
+	\end{tabbing}	
+%重音符\=  \'  \`  在tabbing环境内部不起作用，如果要在tabbing环境内部使用重音，要将\换成\a，如下所示
+		\begin{tabbing}
+			重音符\hspace*{5bp} \= 代码\kill
+			\a=o \> $\backslash$a=o\\
+			\a'o \> $\backslash$a'o\\
+			\a`o \> $\backslash$a`o\\
+			\a=a \> $\backslash$a=a\\
+			\a'a \> $\backslash$a'a\\
+			\a`a \> $\backslash$a`a\\
+			\ldots \> \ldots
+		\end{tabbing}
+\end{document}
+
+```
+
+
+
+## table环境
+
+```latex
+\begin{table}[位置参量]
+	<表文内容>
+\end{table}
+%位置参量有四种：h（当前行或者下一行），b（底部），t（顶部），p（另面设置专用表格页）
+```
+
+
+
+## tabular环境
+
+```latex
+%用于制作有线框表格
+\begin{tabular}[对齐方式选择]    %左对齐l，右对齐r，居中c
+	<表文内容>
+\end{tabular}
+
+%表格中的竖线："|"
+%表格中的横线："\hline"
+%双横线："\hline\hline"
+%行扩充{实际就是在一定范围内添加横线}：\cline{i-j}	
+%单行列元素缩并（将当前行某个区域范围内的n列缩成一列）：\multicolumn{列数}{列参数}{条目正文}
+```
+
+
+
+## math环境
+
+```latex
+需要用$……$将公式或数学符号括起来
+```
+
+
+
+## 界标排版命令
+
+```latex
+%动态开界标命令
+\left<界标排版命令><数学公式>
+%动态闭界标命令
+<数学公式>\right<界标排版命令>
+$$f(a,b,c) = (a+b)+\left\{\frac{a+b}{a-b}\right\}+\left[\frac{1}{c+d}\right]$$
+
+%---------------------------------------------------------------------------
+%有时排版只需要一个动态界标即可，此时需要用界标控制字符"."来充当另一个被省略的界标
+$$f_{ij} = \left\{
+	\begin{array}{ll}
+	y & {\rm if} y>0\\	%"\rm"表示使用rome字体
+	z+y & {\rm otherwise}
+\end{array}
+\right.$$
+```
+
+
+
+## 版式选择
+
+```latex
+\twoside	%双面输出
+\twocolumn	%左右两列排列
+\titlepage	%标题内容单独占一页
+```
+
+
+
+## 字体命令
+
+```latex
+\rm	%罗马字体命令
+\bf	%黑体命令
+\it	%意大利字体命令
+\sc	%小号大写字体命令
+\sl	%斜体命令
+\tt	%打字机体命令
+\em	%强调型字体命令：当前字体为罗马字体时，则强调型为意大利字体；当前字体为非罗马字体时，则强调型为罗马字体
+```
+
+
 
