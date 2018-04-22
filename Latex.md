@@ -548,6 +548,9 @@ $下面内容有待考察
 \marginparsep size	%边注与正文间距命令（页边注释区与正文边缘之间的距离）
 \marginparpush size	%边注间距命令（多个边注之间的垂直间距）
 \marginpar{边注内容}	%边注命令
+%添加竖线作边注
+\marginpar{\rule[Y轴方向坐标：+向上，-向下]{竖线宽度}{竖线长度}}
+\marginpar{\rule[-60mm]{1mm}{60mm}}
 ```
 
 
@@ -1071,5 +1074,380 @@ $$f_{ij} = \left\{
 \em	%强调型字体命令：当前字体为罗马字体时，则强调型为意大利字体；当前字体为非罗马字体时，则强调型为罗马字体
 ```
 
+```latex
+%---------------------------------------------------------------------------
+%2018.4.20
+```
 
+------
+
+
+
+## 盒子
+
+```latex
+\mbox{内容}	%当希望一个文本不会换行输出时，可以使用，此时无边框
+
+\fbox{内容}	%有边框
+
+\makebox[宽度][位置]{文本}	%可指定盒子宽度，文本在盒子中的位置（l：左端；r：右端；s：两端，默认是居中）；无框
+\framebox	%与\makebox类似，有框
+%---------------------------------------------------------------------------
+\framebox[2.5cm][l]{.........}
+\framebox[3cm][s]{XXX \dotfill XXX}	%"\dotfill"点填充，向两边延伸，直到该横向范围内被点与字符填满
+%---------------------------------------------------------------------------
+%给单个字母加斜线，需要用\makebox
+\makebox[0pt][l]{/}S
+```
+
+
+
+## verbatim环境
+
+```latex
+%verbatim环境能够原样输出其中的内容，空格不会特殊表示
+\begin{verbatim}
+……
+\end{verbatim}
+%verbatim*中空格会特殊表示
+
+```
+
+
+
+ ## 块注释
+
+```latex
+%当需要整体注释时，可以使用块注释命令
+\iffalse %块注释命令开始
+……
+\fi %块注释命令结束
+```
+
+
+
+## 产生随机文本
+
+```latex
+\usepackage{lipsum}
+\lipsum[num]
+```
+
+
+
+## 首行缩进
+
+```latex
+%Latex中默认每一节的段首不会自动缩进，此时需要在导言区引入
+\setlength{\parindent}{2em}
+\usepackage{indentfirst}
+
+%但当在中文段落后紧跟一个英文段落或其他情况下，段落仍会出现不缩进的情况，此时可以在该段段首添加
+\indent
+```
+
+
+
+##段距行距
+
+```latex
+%LaTeX用\baselineskip表示当前的行距，其默认值大约是当前字号的1.2倍，如果当前字号是10pt，那么\baselineskip是12pt。这对英文排版是合适的，对中文就显得太拥挤
+%通常把行距设为字号的1.8倍：
+\setlength{\baselineskip}{1.8em}
+%LaTeX 用\parskip表示段距，我一般把它设为1ex：
+\setlength{\parskip}{1ex}
+%注意这些修改长度的命令最好都放在正文区（即\begin{document}之后）
+```
+
+
+
+## 设置纸张大小
+
+```latex
+%当要求使用b5纸，单面打印时
+\documentclass[10pt, b5paper]{report}
+\usepackage[body={12.6cm, 20cm}, centering, dvipdfm]{geometry}
+% 以上将版心宽度设为 12.6cm，高度 20cm，版心居中，且自动设置PDF文件的纸张大小。
+```
+
+
+
+## titlesec宏包使用
+
+```latex
+%在 xelatex 中使用 \usepackage 指令使用 titlesec 宏包时,可以指定一些格式选项，如下：
+\usepackage[center]{titlesec}
+%其中 center 可使标题居中,还可设为 raggedleft (居左，默认), raggedright (居右)。标题由标签与标题内容构成，其格式通常在 xelatex 文档导言区通过 titlesec 宏包提供的指令 \titleformat 进行设定。 
+%\titleformat 指令用法如下：
+\titleformat{command}[shape]{format}{label}{sep}{before}[after]
+%各参数含义如下：
+%command 是要重新定义的各种标题命令,比如 \part，\chapter，\section，\s section，\s s section，\paragraph，\s paragraph等；
+%shape 是用来设定段落形状的,可选的参数有 hang 、 block 、 display 
+%format 用于定义标题外观,比如使标题居中、字体加粗等；
+%label 用于定义定义标题的标签,就是标题内容前面的标号；
+%sep 定义标题的标签与标题内容之间的间隔距离。
+%before 用于在标题内容前再加些内容；
+%after 用于在标题内容后再加些内容。
+%实例
+\titleformat{\chapter}{\centering\Huge\bfseries}{第\,\thechapter\,章}{1em}{}
+%其 中, shape 、 before 、 after 参 数 都 被 省 略 掉 了。 format 参 数 将章标题设置为居中( \centering )显示、字号为 \Huge，字体被加粗显示 \bfseries ；在设置 s section 格式,未采用居中,而是采用默认的居左,另外将标题的字号也降了一级( \large )。 label 参数将标题的标签设置为 “第 xxx 章”格式。sep 参数设置标签与标题内容之间以一个字(1em)的宽度为间隔。
+%该内容需要放置在导言区
+```
+
+```latex
+%-----------------------------------------------------------------------------
+%2018.4.21
+```
+
+------
+
+
+
+## 拆分并独立编译
+
+```latex
+%当tex文件较大时，可以将其拆分为几个部分，分别编译，再在主文件main.tex中包含起来
+\documentclass{book}
+\begin{document}
+\title{A LaTeX Book}
+\author{cohomo@blogbus}
+\date{}
+\maketitle
+\input{chap1}
+\input{chap2}
+\input{chap3}
+\end{document}
+%\input命令也可以改为\include命令，区别在于input可以放在导言区和正文区，包含的内容不另起一页；而include只能放在正文区，包含的内容另起一页
+
+%-----------------------------------------------------------------------------
+%拆分命令共有三条
+\input{xxx}	% 单纯地将xxx.tex内容导入进主文件中，不分页；可放在导言区或正文区；各分文件加入宏命令后可以分别编译，但编码自动从1开始，可能造成交叉引用混乱
+\include{xxx}	%分页显示内容，适于book类分chapter编写；只能放置在正文区，往往与\includeonly合用；总是显示正确的编码顺序
+\includeonly{xxx}	%放在导言区；与\ include合用，指定部分或全部\include内容参与编译
+
+%\input实例：
+
+%main.tex
+\documentclass[12pt,a4paper]{article}
+\def\allfiles{}
+
+\begin{document}
+% paper title
+\title{How to \textbf{compile} in files}
+\maketitle
+
+\input{abstract}
+\input{introduction}
+\input{implement}
+\input{reference}
+\end{document}
+
+%abstract.tex
+\ifx\allfiles\undefined
+\documentclass[12pt,a4paper]{article}
+\begin{document}
+\fi
+\section*{Abstract}
+This is abstract.
+
+\ifx\allfiles\undefined     %如果位置放错，可能出现意外中断
+\end{document}
+\fi
+
+%introduction.tex
+\ifx\allfiles\undefined
+\documentclass[12pt,a4paper]{article}
+\begin{document}
+\fi
+\section{Introduction}
+This is introduction. It's the first part.
+
+\ifx\allfiles\undefined
+\end{document}
+\fi
+
+%implement.tex
+\ifx\allfiles\undefined
+\documentclass[12pt,a4paper]{article}
+\begin{document}
+\fi
+\section{Inplement}
+This is inplement.
+If you compile it seperately, it's number is 1, else 2.
+\ifx\allfiles\undefined
+\end{document}
+\fi
+
+%reference.tex
+\ifx\allfiles\undefined
+\documentclass[12pt,a4paper]{article}
+\begin{document}
+\fi
+\section{Reference}
+This is reference.
+If you compile it seperately, it's number is 1, else 3.
+
+\ifx\allfiles\undefined
+\end{document}
+\fi
+
+%注意在主文件中添加的\def\allfiles{}；在各个子文件第一行添\ifx\allfiles\undefined；\begin{document}后一行添加\fi；在\end{document}前一行添加\ifx\allfiles\undefined，后一行添加\fi
+%上述方式能够使文件在无论是在主文件中还是各个子文件单独都能运行
+
+%-----------------------------------------------------------------------------
+%联合使用\include和\includeonly
+%和1中类似，只需要将\input命令修改为\include命令，在导言区加入\includeonly。
+
+%main.tex
+\documentclass[12pt,a4paper]{article}
+\includeonly{abstrct,introduction,implement,reference}	%根据需要删减
+
+\begin{document}
+% paper title
+\title{How to \textbf{compile} in files}
+\maketitle
+
+\include{abstract}
+\include{introduction}
+\include{implement}
+\include{reference}
+\end{document}
+
+%-----------------------------------------------------------------------------
+%当使用宏包\subfiles
+%main.sty
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+%\usepackage{graphicx}
+%\graphicspath{{images/}{../images/}}
+\usepackage{subfiles} 
+\usepackage{blindtext}
+
+\title{Subfile Example}
+\author{Team Learn ShareLaTeX}
+\date{ }
+\begin{document}
+\maketitle
+\section{Introduction}
+\subfile{sections/introduction}
+%\section{Second section}
+%\subfile{sections/section2}
+\end{document}
+
+%introduction.sty
+\documentclass[../main.tex]{subfiles}
+ 
+\begin{document}
+\textbf{Hello world!}
+ 
+%\begin{figure}[bh]
+%\centering
+%\includegraphics[width=4cm]{lion-logo}
+%\label{fig:img1}
+%\caption{ShareLaTeX learn logo}
+%\end{figure}
+ 
+Hello, here is some text without a meaning.  This... 
+\end{document}
+
+%-----------------------------------------------------------------------------
+$下述问题以后可能会碰到，先mark
+%但文档中section较多，且编写时间不同时
+%1.想分别编辑各个section
+%2.由于preamble太多，想专门弄一个文件放置preamble
+%3.想用bibtex来生成参考文件
+
+%main.sty
+\documentclass[fleqn]{article}
+
+\usepackage{subfiles}  
+\usepackage{D:/My_Preamble} %必须是绝对路径，才能让各个section*.tex在单独编译时使用到；路径可以更改；不用在每个.tex文件中再去导入各个包，较方便
+
+\title{This is title}
+\author{Jay Chou}
+\date{\today}
+
+\begin{document}
+\maketitle
+Hello World!
+
+\subfile{sections/section1}	%使用子文件.tex;注意是sections文件夹中的section1文件
+\subfile{sections/section2}
+
+\bibliographystyle{unsrt}	
+%参考文献标准样式：
+%1.plain：按字母的顺序排列，比较次序为作者、年度和标题
+%2.unsrt：样式同plain，按照引用的先后排序
+%3.alpha：用作者名首字母+年度后两位作标号，以字母顺序排序
+%4.abbrv：类似plain，将月份全拼改为缩写
+%5.ieeetr：国际电气电子工程师协会期刊样式
+%6.acm：美国计算机学会期刊样式
+%7.siam：美国工业和应用数学学会期刊样式
+%8.apalike：美国心理学学会期刊样式
+\bibliography{D:/My_Reference} %必须是绝对路径。但各个section*.tex单独编译时使用不到(缺点)；使用bib
+\end{document}
+
+%section1.tex
+\documentclass[../main.tex]{subfiles} %两个点代表返回上一级菜单
+
+\newcommand{\AAA}{\textbf{abcdefg}} % 这个'\AAA'命令只在这个tex文件里起作用
+
+\begin{document}
+%From there on, type whatever you want.
+\section{This is section 1}
+Hello, this is section 1.
+\end{document} 
+
+$其他文件也是同理编辑
+
+%接下来编辑"My_preamble.sty"文件，需要保存在"main.tex"中指定的路径
+
+\ProvidesPackage{msqmypreamble}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{cite}
+%\usepackage{graphicx, graphics} 
+% etc
+
+%\setlength{\voffset}{-2.0cm}
+%\setlength{\parskip}{0.2cm}
+\newtheorem{thm}{Theorem} \setcounter{thm}{0}
+\newcommand{\defn}{\overset{\Delta}{=}}
+\newcommand{\st}{\textrm{~s.t.~}}
+\newcommand{\supp}{\mathop{\rm supp}}
+% etc
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+%当subfiles.sty文件不存在时，也可以将下述代码复制到main.tex文件所在文件夹，并保存为.sty格式
+
+%% This is file `subfiles.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% subfiles.dtx  (with options: `package')
+%% 
+%% Copyright 2002 Federico Garcia
+%% 
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{subfiles}[2002/06/08 Federico Garcia]
+\DeclareOption*{\PackageWarning{\CurrentOption ignored}}
+\ProcessOptions
+\RequirePackage{verbatim}
+\newcommand{\skip@preamble}{%
+    \let\document\relax\let\enddocument\relax%
+    \newenvironment{document}{}{}%
+    \renewcommand{\documentclass}[2][subfiles]{}}
+\newcommand\subfile[1]{\begingroup\skip@preamble\input{#1}\endgroup}
+\endinput
+%%
+%% End of file `subfiles.sty'.
+```
+
+```latex
+%-----------------------------------------------------------------------------
+%2018.4.22
+```
+
+------
 
