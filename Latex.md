@@ -1451,3 +1451,103 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 ------
 
+
+
+## 中文字体使用
+
+```latex
+%调用方式
+%{\字体名称 正文内容}
+%实例：
+\documentclass{article}  
+\usepackage{ctex}  
+  
+\begin{document}  
+  
+中文宏包测试               \par 	%"\par"表示回车换号  
+{\songti   这是宋体的样式} \par  
+{\heiti    这是黑体的样式} \par  
+{\fangsong 这是仿宋的样式} \par  
+{\kaishu   这是楷书的样式} \par  
+{\lishu   这是隶书的样式} \par %CTeX的手册中是支持隶书和幼圆的，  
+{\youyuan 这是幼圆的样式} \par %但是不知是何原因编译有问题  
+  
+\end{document} 
+```
+
+
+
+## 全局字体设置
+
+```latex
+\setmainfont{字体名称}
+\setCJKmainfont{字体名称}
+%大括号中填入的即字体名称（中英文皆可，英文严格区分大小写）；前者设置的是英文字体，后者设定的是CJK字体
+%也可以按照自定义的指令来命名
+
+%设定英文字体指令
+\newfontinstance{自定义指令名}{系统字体名称}
+%实例：
+\newfontinstance{\courier}{Courier}
+
+%设定中文字体指令
+\setCJKfamilyfont{自定义的CJKfamily名称}{系统字体名称}
+\newcomman{自定义指令名}{自定义的CJKfamily名称}
+%实例：
+\setCJKfamilyfont{hwxk}{STXingkai}
+\newcommand{\stxk}{\CJKfamily{hwxk}}
+%系统名称必须与查到的名称一致，自定义名称可以随意设置，最好指令名以\开头
+```
+
+
+
+## 附录
+
+```latex
+\appendix
+\appendixpage
+\addappheadtotoc
+%在\appendix之后的内容都是附录；\appendixpage将在一个附录名前添加"Appendices";\addappheadtotoc将把title添加至目录
+%对于后两者需要引入宏包\usepackage{appendix}
+
+%另一种方式是采用附录环境
+\begin{appendices}
+……
+\end{appendices}
+%后一种的方式不能与\appendixpage同用
+
+%两种方法实例：
+%1
+\documentclass[a4paper,12pt]{article}
+\begin{document}
+    main body %正文内容
+  \appendix
+  \renewcommand{\appendixname}{Appendix~\Alph{section}}	%用于将\section{}大括号中的内容作为附录标题输出
+
+  \section{Some Examples 1}
+  some text...
+  \section{Some Examples 2}
+  some text...
+\end{document}
+%2
+\documentclass[10pt,conference,twocolumn]{IEEEtran}
+\begin{document}
+   main body %正文内容
+    \begin{appendices}
+      \section{  }
+      some text in Appendix A
+      \section{  }
+      some text in Appendix B
+  \end{appendices}
+\end{document}
+```
+
+```latex
+%-----------------------------------------------------------------------------
+%2018.4.23
+```
+
+------
+
+
+
