@@ -104,7 +104,7 @@ Date：2018.4.16
  \begin{document}
     How to use the algorithm2e in \LaTeX ~ file.
     Examples: 
-%    ------------------------------Example - 1-------------------------------------------
+%    ------------------------------Example - 1--------------------------------
         \begin{algorithm}[H]
             \caption{How to write algorithms}
             \KwIn{this text}
@@ -124,7 +124,7 @@ Date：2018.4.16
         }
     \end{algorithm}
     
-%    ---------------------------Example - 2----------------------------------------------
+%    ---------------------------Example - 2-----------------------------------
     \begin{algorithm} 
 %    \SetAlgoNoLine  %去掉之前的竖线
      \caption{identifyRowContext} 
@@ -1549,5 +1549,70 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 ------
 
+## 伪代码排版（与前述latex2e排版略有区别）
 
+```latex
+\documentclass[11pt]{ctexart}  
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}  
+\usepackage{algorithm}  %Algorithm 环境主要作用是将代码段变成浮动体，浮动体一方面能防止代码超出页面范围，另外一方面也方面最后生成和图表目录相似的算法列表目录。也能通过标记，方便在文章其它地方引用。
+\usepackage{algorithmicx}  %为描述算法提供了程序设计中的所有常用结构的表示，如：判断 (If) ，循环  (While, For, Loop), 输入(Require) ,输出(Ensure)等。在这里需要注意的是，所有 algorithmic宏包提供的命令都是全大写;algorithmicx宏包提供的命令只需首字母大写
+\usepackage{algpseudocode}  %algpseudocode 宏包则是 algorithmicx 宏包的一部分，它提供了实际用来排版伪代码的环境
+\usepackage{amsmath}  %提供了许多呈现公式和其他数学结构的特征
+  
+\floatname{algorithm}{算法}  
+\renewcommand{\algorithmicrequire}{\textbf{输入:}}  
+\renewcommand{\algorithmicensure}{\textbf{输出:}}  
+  
+\begin{document}  
+    \begin{algorithm}  
+        \caption{用归并排序求逆序数}  %caption{内容}和caption*{内容}前者内容前面会加上Algorithm+编号，而后者不会
+        \begin{algorithmic}[1] %\begin{algorithmic}[1]中的[n]表编号间隔，为1的话表示每行都要有编号
+            \Require Array数组，n数组大小  
+            \Ensure 逆序数  
+            \Function {MergerSort}{Array,left,right}  
+                \State result←0  
+                \If {left<right}  
+                    \State middle←(left+right)/2  
+                    \State result←result+ \Call{MergerSort}{Array,left,middle} 
+                    \State result←result+ \Call{MergerSort}{Array,middle,right}  
+                    \State result←result+ \Call{Merger}{Array,left,middle,right}  
+                \EndIf  
+                \State \Return{result}  
+            \EndFunction  
+            \State  
+            \Function{Merger}{Array,left,middle,right}  
+                \State i←left  
+                \State j←middle  
+                \State k←0  
+                \State result←0  
+                \While{i<middle \textbf{and} j<right}  
+                    \If{Array[i]<Array[j]}  
+                        \State B[k++]←Array[i++]  
+                    \Else  
+                        \State B[k++]←Array[j++]  
+                        \State result←result+(middle−i)  
+                    \EndIf  
+                \EndWhile  
+                \While{i<middle}  
+                    \State B[k++]←Array[i++]  
+                \EndWhile  
+                \While{j<right}  
+                    \State B[k++]←Array[j++]  
+                \EndWhile  
+                \For{i=0→k−1}  
+                    \State Array[left+i]←B[i]  
+                \EndFor  
+                \State \Return{result}  
+            \EndFunction  
+        \end{algorithmic}  
+    \end{algorithm}  
+\end{document}  
+```
+
+```latex
+%-------------------------------------------------------------------------------
+%2018.4.24
+```
+
+------
 
