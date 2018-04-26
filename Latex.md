@@ -1616,3 +1616,139 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 ------
 
+## latex引理、定义、定理 自定义
+
+```latex
+%先要引入包，amsmath
+\usepackage{amsmath}
+
+%需要首先定义用法
+\newtheorem{环境名}{标题}{排序单位} %排序单位一般是chapter，此时，表示定理按章节编号
+
+%实例：
+\usepackage{amsmath}  
+\newtheorem{theorem}{Theorem}  
+\newtheorem{lemma}{Lemma}  
+\newtheorem{proof}{Proof}[section]  
+
+\section{theorem}  
+\begin{theorem}  
+This is a theorem.  
+\end{theorem}  
+  
+\begin{lemma}  
+This is a lemma.  
+\end{lemma}  
+  
+\section{Proof}  
+\begin{proof}  
+This is proof.  
+\end{proof}  
+
+%-------------------------------------------------------------------------------
+%当需要更加精细编写定理时，需要使用ntheorem宏包
+\newtheorem{lemma}{Lemma} %此时，将在"Lemma"后生成编号"1",若改为\newtheorem*{lemma}{Lemma} ，此时编号将消失  
+\begin{lemma}  
+This is a lemma.  
+\end{lemma}  
+
+%也可以使用该宏包中的命令来改变排版格式
+\theoremheaderfont { 字体命令}    %改变标题字体
+\theorembodyfont{ 字体命令}   	  %改变定理内正文字体
+\theoremnumbering {计数形式} %设置序号的计数形式，它的默认值是arabic ，可改为采用alph 、Alph 、rom、Roman 、greek 、Greek 、chinese 或fnsymbol 计数形式。
+\theoremstyle {格式〉 %有break等命令。break 让 定理与内容分行
+
+%当希望结束符产生变化时，可以使用\qed command
+%首先导入 amssymb宏包
+\usepackage{amssymb}
+
+%再定义使用\qed 对应的图形,如：
+\newcommand{\qed}{\hfill $\blacksquare$}	%也可以用square，此时为空心方块
+
+%再在相应的地方使用\qed即可
+\qed
+
+%实例：
+\theorembodyfont{\bfseries\upshape}  %改变定理的字体
+\theoremseparator{:}  %使定理标题后跟":"
+\theoremstyle{break}  %使标题和内容分行
+\newtheorem{theorem}{Theorem}  
+\newtheorem{lemma}{Lemma}  
+\newtheorem{proof}{Proof}[section]  
+  
+\section{theorem}  
+  
+\begin{theorem}[introduction]  
+This is a theorem.  
+\end{theorem}  
+  
+\begin{lemma}  
+This is a lemma.  
+\end{lemma}  
+  
+\theorembodyfont{\upshape}  
+\theorembodyfont{\bf}  
+\section{Proof}  %当开始proof后，其后跟着的数字会变化为n.1;n.2……
+\begin{proof}  
+This is proof.  
+\end{proof}  
+
+%也可以自定义环境
+\newenvironment{新环境}{开始定义}{结束定义}
+\newenvironment{proof}{{\noindent\it Proof}\quad}{\hfill $\square$\par}  %\noindent 表示 proof 没有缩进，\it 表示 proof 斜体， \quad 表示 proof 后面空四个空格， \hfill 表示右对齐， \square 表示方框，\par表示结尾空一段
+
+%当需要输出中文且需要缩进时，可以使用以下代码
+\newtheorem{Definition}{\hspace{2em}定义}[chapter]
+\newtheorem{theorem}{\hspace{2em}定理}[chapter]
+\newtheorem{lemma}{\hspace{2em}引理}[chapter]
+\newtheorem{proof}{证明}[chapter]
+%[计数器名称都可以更改]
+```
+
+
+
+## 使花括号变长
+
+```latex
+$	\Big\{...	\Big\}	$
+```
+
+
+
+## 使竖线变长
+
+```latex
+$	\Big|\Big|$
+$	\big|\big|$
+$	\bigg|\bigg|$
+$	\Bigg|\Bigg|$
+```
+
+
+
+## 设置字体颜色
+
+```latex
+%1.直接使用已经定义好的颜色
+\usepackage{color}
+\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
+
+%2.组合red、green、blue的值合成需要的颜色
+\usepackage{color}
+\textcolor[rgb]{r,g,b}{text}	%其中{r,g,b}代表red、green和blue三种颜色的组合，取值范围为[0-1]
+\textcolor[RGB]{R,G,B}{text}	%其中{R,G,B}代表red、green和blue三种颜色的组合，取值范围为[0-255]
+
+%3.定义新颜色，直接调用
+\usepackage{color}
+\definecolor{ColorName}{rgb}{r,g,b}     %这时r/g/b的定义域就在[0-1]
+\definecolor{ColorName}{RGB}{R,G,B}		%这时R/G/B的定义域就在[0-255]
+\textcolor{ColorName}{text}
+```
+
+```latex
+%-------------------------------------------------------------------------------
+%2018.4.26
+```
+
+------
+
