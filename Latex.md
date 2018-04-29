@@ -1752,3 +1752,247 @@ $	\Bigg|\Bigg|$
 
 ------
 
+
+
+## 字体格式设定
+
+```latex
+%可以通过字体命令设置也可以通过字体申明作用于后续文本
+%字体类型设置
+\textrm{字体}	
+\textrm{Roman Family}	||	\rmfamily Roman Family	%罗马字体
+\textsf{字体}
+\textsf{Sans Serif Family}	||	\sffamily Sans Serif Family	%无衬线字体
+\texttt{字体}
+\texttt{Typewriter Family}	||	\ttfamily Typewriter Family	%打字机字体
+
+%对于字体申明时，遇到后一个申明时，前者作用将消失，或者也可以使用{}进行范围控制
+
+%字体系列设置(粗细、宽度)
+\textmd{Medium Series}	\textbf{Boldface Series}
+{\mdseries Medium Series}	{\bfseries Boldface Series}
+
+%字体形状设置（直立、斜体、伪斜体、小型大写）
+\textup{Upright Shape}	\textit{Italic Shape}
+\textsl{Slanted Shape}	\textsc{Small Caps Shape}
+{\upshape Upright Shape}	{\itshape Italic Shape}
+{\slshape Slanted Shape}	{\scshape Small Caps Shape}
+
+%中文字体设置
+%需要使用ctex宏包
+{\songti 宋体}
+{\heiti 黑体}
+{\fangsong 仿宋}
+{\kaishu 楷书}
+
+%字体大小设置
+%字体大小设置跟\document[normal size]{article}中的normal size有关，一般只有10pt、11pt、12pt
+{\tiny}
+{\scriptsize}
+{\footnotesize}
+{\small}
+{\normalsize}
+{\large}
+{\Large}
+{\LARGE}
+{\huge}
+{\Huge}
+
+%中文字号设置命令
+\zihao{字号} 内容
+
+
+```
+
+```latex
+%---------------------------------------------------------------------------------
+%2018.4.28
+```
+
+------
+
+
+
+## 换行和段落
+
+"\\"只是用来换行，并不会产生新段落，故而不会产生首行缩进效果
+
+"\par"能代替空行的作用，产生新段落
+
+
+
+## 目录产生
+
+通过"\tablecontents"命令，在文章开头输出目录
+
+
+
+## 反斜杠
+
+由于latex中两个反斜杠起着换行的作用，所以需要使用"\textbackslash"来生成反斜杠
+
+
+
+## 引号
+
+`：左单引号
+
+'：右单引号
+
+``：左双引号
+
+''：右双引号
+
+
+
+## 连字符
+
+通过"-"、"--"、"---"生成短中长三种连字符
+
+
+
+## 重音符（以o为例）
+
+```latex
+\`o;\'o;\^o;\''o;\~o;\=o;\.o;\u{o};\v{o};\H{o};\r{o};\t{o};\b{o};\c{o};\d{o}
+```
+
+
+
+## 浮动体
+
+```latex
+%当在latex中输入插图和表格等时，版式将需要改变，此时可以借助浮动体
+%对于插图，可以使用figure浮动体
+\begin{figure}
+	\centering
+	\includegraphics[scale = 0.3]{lion}
+\end{figure}
+
+%对于表格，可以使用table浮动体
+\begin{table}
+	内容
+\end{table}
+```
+
+
+
+## 标签设置和引用
+
+```latex
+%通过lable命令设置标签
+\label{}
+%通过ref命令引用标签
+\ref{}
+```
+
+
+
+## 数学公式
+
+```latex
+%可以通过美元符号、小括号、math环境实现行内公式
+$a+b = b+a$
+\(a+b = b+a\)
+\begin{math}a+b = b+a\end{math}
+
+%可以通过$$、中括号、displaymath环境、equation环境来实现行间公式排版
+$$a+b = b+a$$
+\[a+b = b+a\]
+\begin{displaymath}a+b = b+a\end{displaymath}
+\begin{equation}a+b = b+a\end{equation}	%实现公式编号
+```
+
+
+
+## 矩阵
+
+```latex
+%需要引入amsmath宏包
+\begin{matrix}
+	0 & 1 \\
+	1 & 0
+\end{matrix}
+
+%pmatrix环境，在两端形成小括号
+\begin{pmatrix}
+	0 & 1 \\
+	1 & 0
+\end{pmatrix}
+
+%bmatrix环境，在两端加中括号
+\begin{bmatrix}
+	0 & 1 \\
+	1 & 0
+\end{bmatrix}
+
+%Bmatrix环境，在两端加大括号
+\begin{Bmatrix}
+	0 & 1 \\
+	1 & 0
+\end{Bmatrix}
+
+%vmatrix环境，在两端加单竖线
+\begin{vmatrix}
+	0 & 1 \\
+	1 & 0
+\end{vmatrix}
+
+%Vmatrix环境，在两端加双竖线
+\begin{Vmatrix}
+	0 & 1 \\
+	1 & 0
+\end{Vmatrix}
+
+%smallmatrix环境，可以实现行内小矩阵
+\begin{math}
+\left(	%需要手动添加左括号
+\begin{smallmatrix}
+	x & -y \\ y & x
+\end{smallmatrix}
+\right)	%手动添加右括号
+\end{math}
+```
+
+
+
+## biblatex参考文献
+
+```latex
+%需要将编译器中的bibtex改为biber
+%首先引入biblatex宏包
+\usepackage[stype = numeric, backend = biber]{biblatex}
+%添加bib参考文献管理库
+\addbibresourse{文件名.bib}
+%在正文中即可通过命令进行引用
+\cite{文件名}	%无格式化引用
+\cite{文件名}	%带方括号的引用
+\cite{文件名}	%上标引用
+
+\printbibliography	%将文献库中所有的文献进行输出，此时标题名为REFERENCES
+%可以通过命令进行修改
+\printbibliography[title = {参考文献}]
+
+%通过nocite命令可以输出未引用文献
+\nocite{*}	%"*"表示输出全部，也可通过文献名来进行筛选输出
+```
+
+
+
+## 自定义命令
+
+```latex
+%通过\newcommand+<命令>+[参数个数]+[默认参数]+{定义}实现自定义命令
+\newcommand\loves[2]{#1 喜欢 #2}	%参数个数最多为9个，可以使用#1、#2……#9进行表示
+
+%可以设置默认参数，可以通过[内容]来改变该默认值，默认参数位置为首个参数
+\newcommand\love[3][喜欢]{#2#1#3}
+\love{1}{2}
+\love[最爱]{1}{2}
+```
+
+```latex
+%---------------------------------------------------------------------------------
+%2018.4.29
+```
+
