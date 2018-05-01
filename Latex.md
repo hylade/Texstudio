@@ -1996,3 +1996,66 @@ $$a+b = b+a$$
 %2018.4.29
 ```
 
+
+
+## 公式箭头
+
+```latex
+% 通过witharrows宏包实现公式右侧添加箭头，使公式更加具有严谨性等
+% 编译需要WithArrows环境，如果异常需要编译两次
+\documentclass{ctexart}
+\usepackage{witharrows}
+\begin{document}
+$\begin{WithArrows}
+A & = (a + 1)^2 \Arrow{我们展开} \\	% 此处Arrow后跟着的便是箭头上的内容
+& = a^2 + 2a + 1
+\end{WithArrows}$
+\end{document}
+
+% 当具有多行公式，但需要跳过某几行公式时，可以对\Arrow进行参数设置
+\documentclass{ctexart}
+\usepackage{witharrows}
+\begin{document}
+$\begin{WithArrows}
+A & = \bigl((a+b)+1\bigr)^2 \Arrow{}\Arrow{}[jump=2] \\	%此处前一个arrow将连接1、2行，后一个arrow将跳过第二行；注意此时参数设在在\Arrow{}后
+& = (a+b)^2 + 2(a+b) +1 \\
+& = a^2 + 2ab + b^2 + 2a + 2b +1
+\end{WithArrows}$
+\end{document}
+
+% 当需要箭头离开公式一定距离时，可以通过在\Arrow{}前设置参数
+\documentclass{ctexart}
+\usepackage{witharrows}
+\begin{document}
+$\begin{WithArrows}
+A & = \bigl((a+b)+1\bigr)^2
+\Arrow[xoffset=1cm]{with \texttt{xoffset=1cm}} \\	% 此时，箭头离开公式1cm，若同时具有多行公式，还需要跳行连接时
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A & = \bigl((a+b)+1\bigr)^2 \Arrow[xoffset = 2cm]{11}[jump=2]\\
+% & = (a+b)^2 + 2(a+b) +1 \\
+% & = a^2 + 2ab + b^2 + 2a + 2b +1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+& = (a+b)^2 + 2(a+b) +1
+\end{WithArrows}$
+\end{document}
+
+% 若需要使箭头向上，或加粗
+% 当在\Arrow前需要设置多个参数时，可以将多个参数设置放在一个[]中
+\documentclass{ctexart}
+\usepackage{witharrows}
+\begin{document}
+$\begin{WithArrows}
+A & = \bigl((a+b)+1\bigr)^2 \Arrow[tikz = thick, xoffset = 2cm, tikz = <-]{11}[jump=2]\\	% 此时，箭头将加粗并且反向（向上）
+& = (a+b)^2 + 2(a+b) +1 \\
+& = a^2 + 2ab + b^2 + 2a + 2b +1
+\end{WithArrows}$
+\end{document}
+```
+
+```latex
+%----------------------------------------------------------------------------------
+%2018.5.1
+```
+
+------
+
