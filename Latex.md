@@ -2059,3 +2059,177 @@ A & = \bigl((a+b)+1\bigr)^2 \Arrow[tikz = thick, xoffset = 2cm, tikz = <-]{11}[j
 
 ------
 
+
+
+## 输入url并合理换行
+
+```latex
+% 通常而言，对于一个单词（整个\url可以视作一个长单词）不知如何进行分词，那么Tex就不会对于该单词进行断行；当单词过长且又处于某行末尾时，将出现overful box
+% 本质上，需要让\url知道我们需要在何处断行
+% 对于该情况，hyperref 宏包提供了两个宏 \UrlBreaks 和 \UrlBigBreaks，略有区别，但一般情况使用 \UrlBreaks 即可
+\documentclass{article}
+\usepackage{hyperref}
+\makeatletter
+\def\UrlOrds{\do\_\do\-}	% 记录了一些特殊字符
+\def\UrlAlphabet{
+      \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j
+      \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t
+      \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D
+      \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N
+      \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X
+      \do\Y\do\Z}	% 记录了26个英文字母的大小写
+\def\UrlDigits{\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\0}	% 记录了10个阿拉伯数字
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\g@addto@macro{\UrlBreaks}{\UrlAlphabet}
+\g@addto@macro{\UrlBreaks}{\UrlDigits}	% 使用LaTeX内核提供的 \g@addto@marco，将上述三个宏的内容接在其后说明，允许在上述所有字符处断行
+\makeatother
+\begin{document}
+\url{http://foo.bar.com/documentclassarticleusepackagehyperrefbegindocumenturlenddocument}
+\end{document}
+
+%此时， url 将自动换行
+```
+
+```latex
+%----------------------------------------------------------------------------------
+%2018.5.2
+```
+
+------
+
+
+
+## autoref命令直接产生引用
+
+```latex
+%当文章内容引用量较大，易产生混乱， 经常混淆，此时可以通过autoref自动生成引用，智能地告诉我们引用的内容是图、表还是公式
+%首先引入hyperref包
+\usepackage{hyperref}
+%定义自动命令
+\def\equationautorefname{式}
+\def\footnoteautorefname{脚注}
+\def\itemautorefname{项}
+\def\figureautorefname{图}
+\def\tableautorefname{表}
+\def\partautorefname{篇}
+\def\appendixautorefname{附录}
+\def\chapterautorefname{章}
+\def\sectionautorefname{节}
+\def\subsectionautorefname{小小节}
+\def\subsubsectionautorefname{subsubsection}
+\def\paragraphautorefname{段落}
+\def\subparagraphautorefname{子段落}
+\def\FancyVerbLineautorefname{行}
+\def\theoremautorefname{定理}
+
+%接下来，只需要在正文相应部分使用\autoref{label名称}即可
+\autoref{label}
+```
+
+
+
+##浮动体链接不准问题（一）
+
+```latex
+% 利用caption宏包修复浮动体超链接不准的问题
+% 将 \caption 放在 \includegraphics 后面，然后在稳重对图片进行引用的话，点击超链接后，将调到图片位置而不是浮动体位置
+% 利用 caption 宏包可以实现修复这一问题
+
+% 实现做法十分简单，只需要在插入宏包 graphicx 和宏包 hyperref 之外，再插入 caption 宏包即可
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{caption}
+
+\usepackage{mwe} % 能够随机产生文本的宏包
+\begin{document}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width = 0.6\linewidth]{example-image.jpg}
+\caption{dummy figure}\label{fig:test}
+\end{figure}
+\blindtext % 添加随机文本，可以在其后通过"[]"控制添加的数量
+\clearpage % 添加新一页
+\blindtext
+
+This is the hyper-reference of Figure \ref{fig:test}.
+\end{document}
+```
+
+```latex
+%----------------------------------------------------------------------------------
+%2018.5.3
+```
+
+------
+
+##浮动体链接不准问题（二）
+
+```latex
+% 对于上述问题，也可以通过引入 hypcap 的宏包，来解决该类问题
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[all]{hypcap} % 在 hypcap 宏包前添加 all 选项，说明 hypcap 宏包会处理全部类型的浮动体，
+\usepackage{mwe} % 是"Minimal Working Example"的简写，是为了产生无意义的测试文字而加载的宏包，实际使用时可以去掉
+\begin{document}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width = 0.6\linewidth]{example-image.jpg}
+\caption{dummy figure}\label{fig:test}
+\end{figure}
+\blindtext
+\clearpage
+\blindtext
+
+This is the hyper-reference of Figure \ref{fig:test}.
+\end{document}
+
+% 此时效果与前述类似
+```
+
+
+
+## 章节编号问题
+
+在 LaTeX 标准文档类中，提供了$\section$，和$\section*$两种命令，用于排版章节标题。其中不带星号的版本有章节编号，会列入目录，同时修改章节标记。带星号的版本只有章节标题格式而不编号，不列入目录，也不会修改章节标记
+
+但有时会希望不编号的章节标题也列入目录中，此时可以考虑三种方法
+
+1. 使用$\section*$手工做目录的处理
+2. 使用$\section$但是抑制编号生成
+
+```latex
+% 1
+% 对于手工做目录的方法，由于在 LaTeX 中处理目录是需要编译两次的，第一次编译过程中， \section 命令将目录信息写入 .aux 文件中，随后在第二次编译过程中， LaTeX 就读取了 .aux文件中的对应信息，形成目录，因此可以考虑模仿 \section 写入 .aux 文件的过程即可
+% 对于这种方法，在 LaTeX 中提供了 \addcontentsline{<辅助文件后缀>}{<章节等级>}{名字} 来完成工作
+\documentclass{ctexart}
+\begin{document}
+\tableofcontents
+\section*{不编号的章节标题}
+\addcontentsline{toc}{section}{不编号的章节标题}
+\end{document}
+
+% 2
+% 在 LaTeX 标准文档类中， secnumdepth 这个计数器用来控制章节编号深度的。在 article 中，这个计数器默认值是 3，对应的章节命令是 \subsubsection。也就是说，在默认情况下， article 会对 \subsubsection 及其以上所有的章节标题进行编号，也就是 \part, \section, \subsection,\subsubsection
+% 在标准文档类中，最大的标题是 \part，它在 book 和 report 中的层次是 [-1] ，在 article 类中的层级是 [0] 。因此，我们只需要将计数器设置为 -2 ，之后章节命令都将不编号
+\documentclass{ctexart}
+\makeatletter % 对于在文件中需要使用包含 "\@" 字样的命令时，需要借助 \makeatletter 和 \makeatother 命令，即通过前者使 "@" 变为普通字母，通过后者回到原始类
+\newcommand\specialsectioning{\setcounter{secnumdepth}{-2}}
+\makeatother
+\begin{document}
+\tableofcontents
+\section{正常编号的章节标题}
+\specialsectioning
+\section{不编号的章节标题}
+\end{document}
+% 对于上述方法，可能需要多次编译
+```
+
+```latex
+%----------------------------------------------------------------------------------
+%2018.5.4
+```
+
+------
+
