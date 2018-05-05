@@ -2233,3 +2233,85 @@ This is the hyper-reference of Figure \ref{fig:test}.
 
 ------
 
+
+
+## section中 XeTeX logo显示问题
+
+```latex
+% 对于下述代码运行过程中将报错
+\documentclass{article}
+\usepackage{graphicx}
+\def\XeTeX{\leavevmode
+\setbox0=\hbox{X\lower.5ex
+\hbox{\kern-.15em\reflectbox{E}}\kern-.1667em \TeX}
+\dp0=0pt \ht0=0pt \box0 }
+\begin{document}
+\TeX, \XeTeX
+\section{\TeX, \XeTeX}
+\TeX, \XeTeX
+\end{document}
+% 错误信息
+! Undefined control sequence. \Gscale@box #1[#2]#3->\leavevmode \def \Gscale@x {#1}\def \Gscale@y {#2}\set...
+
+% 解决方法只需引入另一个宏包即可
+\documentclass{article}
+\usepackage{xltxtra}
+\begin{document}
+\TeX, \XeTeX
+\section{\TeX, \XeTeX{}, \XeLaTeX{}}
+\TeX, \XeTeX
+\end{document}
+```
+
+
+
+## 生成术语
+
+```latex
+% 在撰写论文的时候，有时需要生成论文的术语表，用以说明论文中所使用的符号或者是专业术语，给出其解释，可以使用 nomencl 包完成该任务
+\documentclass{article}
+\usepackage{nomencl} % 引入包
+\makenomenclature
+
+\begin{document}
+\section*{Main equations}
+\begin{equation}
+	$$a=frac{N}{A}$$ % 此处需要注意，当在 \begin{equation} 和 \end{equation} 之间存在空行时或者当公式两边不存在 "$$" 将报错
+\end{equation}
+
+\nomenclature{$a$}{The number of angels per unit area}
+\nomenclature{$N$}{The number of angels per needle point}
+\nomenclature{$A$}{The area of the needle point}
+
+The equation $sigma = m a$
+
+\nomenclature{$sigma$}{The total mass of angels per unit area}
+\nomenclature{$m$}{The mass of one angel} % 添加专业术语及其解释
+
+follows easily.
+\printnomenclature % 生成
+
+\end{document}
+
+% 当完成上述步骤后，由于文件中不存在 .nls 文件，仍无法使用
+% 需要执行下述步骤
+% 1
+% 在文件文件夹中打开 cmd ，输入
+latex <filename>.tex
+% 2
+% 继续输入
+makeindex <filename>.nlo -s nomencl -o <filename>.nlc
+% 3
+% 重新编译源文件即可
+
+% 当你需要使用中文的 术语表 的名字，可以使用下述命令进行修正
+\renewcommand{\nomname}{术语表}
+```
+
+```latex
+%-----------------------------------------------------------------------------------
+%2018.5.5
+```
+
+------
+
