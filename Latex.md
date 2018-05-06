@@ -40,7 +40,6 @@ publisher ="出版社名称"
 \bibliography{BibTeX file} 
 %其中，第一行代码的大括号中的内容为参考文献的模板的文件名(不加后缀)，标准的模板名为plain 
 %第二行代码中的大括号中的内容为参考文件源文件的文件名(不加后缀)
-
 ```
 
 生成参考文献列表 
@@ -2311,6 +2310,110 @@ makeindex <filename>.nlo -s nomencl -o <filename>.nlc
 ```latex
 %-----------------------------------------------------------------------------------
 %2018.5.5
+```
+
+------
+
+
+
+## 通过enumerate宏包设置列表编号对齐方式
+
+```latex
+% 当采用 enumerate 环境默认的编号对齐方式时，编号右对齐，内容左对齐
+% 当采用 enumitem 宏包，设置 align = left ，此时编号和内容都为左对齐；但此时编号与内容的间距过大
+% 此时可以通过修改控制列表内容与页面的左右间距的命令 \parshape 来实现
+% 解决方法为：量取每一个编号的宽度，动态调整 \parshape 的缩进；同时借助 enumitem 包中的 \SetLabelAlign 定义一个特殊的对齐方式
+
+\documentclass{article}
+\usepackage{enumitem}
+\makeatletter
+
+% 定义对齐方式 hang
+\SetLabelAlign{hang}{
+  #1
+\aftergroup\adjustparshapeindent}
+% 编号 #1 会通过 \sbox 存到 \@tempboxa 中，为避免全局设置，
+% 需要用 \aftergroup 跳到盒子外部来设置
+\newcommand*\adjustparshapeindent{
+  \@ifnextchar\egroup
+    {\aftergroup\adjustparshapeindent}
+    {\adjustparshapeindent@auxi}}
+\newcommand*\adjustparshapeindent@auxi{
+  \unless\ifdim\wd\@tempboxa=\labelwidth
+    \adjustparshapeindent@auxii
+  \fi}
+% 调整 \parshape 的缩进
+\newcommand*\adjustparshapeindent@auxii{
+  \dimen@ = \dimexpr\wd\@tempboxa-\labelwidth\relax
+  \labelwidth = \wd\@tempboxa
+  \advance\linewidth -\dimen@
+  \advance\leftmargin \dimen@
+  \advance\@totalleftmargin \dimen@
+  \parshape \@ne \@totalleftmargin \linewidth}
+
+\makeatother
+
+\begin{document}
+\begin{enumerate}[align=hang, start=9]
+\item test\\test
+\item test\\test
+\end{enumerate}
+\end{document}
+```
+
+
+
+## 选择题列表环境
+
+```latex
+% 当想设置的选择题题目之间需要通过灰色线条隔开时，此时可以通过以下方法
+% TiKz 介入定制
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{enumitem}
+
+\newlist{fancyenum}{enumerate}{2}
+\setlist[fancyenum,1]{ % 表示对一级列表进行设置；标签为阿拉伯数字加点
+  leftmargin=12pt,
+  labelsep=10pt,
+  label={\protect\begin{tikzpicture}[]
+    \protect\node[overlay,text width=\textwidth,fill=gray!20,anchor=west,inner sep=0pt,minimum height=2em] (bg) {};
+    \protect\node[overlay,anchor=west,minimum height=2em,inner sep=0pt,fill=black,align=center,text width=2em,text=white,font=\bfseries] at (bg.west) {\arabic*};
+    \protect\node {\rule[5em]{0pt}{0pt}};
+    \protect\end{tikzpicture}} % \protect 命令用于保护脆弱的命令，由于某些宏在使用时会被展开，但在生成表或者写成辅助文件时，直接展开就会报错，此时需要将展开的时机进行延迟，该命令的大致作用既是如此，延迟展开
+  }
+\setlist[fancyenum,2]{label=\Alph*),topsep=0pt,leftmargin=22pt} % 表示对二级列表进行设置；标签为括号加小写英文加点
+
+\begin{document}
+\sffamily %以下内容采用无衬线字体
+
+\begin{fancyenum}
+\item Some test text
+  \begin{fancyenum}
+  \item First
+  \item Second
+  \item Third
+  \end{fancyenum}
+\item Some test text
+  \begin{fancyenum}
+  \item First
+  \item Second
+  \item Third
+  \end{fancyenum}
+\item Some test text
+  \begin{fancyenum}
+  \item First
+  \item Second
+  \item Third
+  \end{fancyenum}
+\end{fancyenum}
+
+\end{document}
+```
+
+```latex
+%------------------------------------------------------------------------------------
+%2018.5.6
 ```
 
 ------
