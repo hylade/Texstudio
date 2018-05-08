@@ -2411,9 +2411,115 @@ makeindex <filename>.nlo -s nomencl -o <filename>.nlc
 \end{document}
 ```
 
+
+
 ```latex
 %------------------------------------------------------------------------------------
 %2018.5.6
+```
+
+------
+
+
+
+## 带圈数字和带圈数字列表
+
+```latex
+% 对于带有圆圈的数字， LaTeX中提供了 \textcircled 命令，但效果并不好，这里使用的 TiKZ 绘制的方法
+% 基本思路：定义一个新命令，接受一个数字参数，用 TikZ 在其周围画上圆圈，同时需要考虑基线与对齐的问题
+\usepackage{tikz}
+\newcommand*{\circled}[1]{\lower.7ex\hbox{\tikz\draw (0pt, 0pt)
+    circle (.5em) node {\makebox[1em][c]{\small #1}};}}
+% 完成带圆圈数字的定义
+
+% 如果上述命令需要在列表中使用时，由于具有前一次提到的'脆弱命令'的问题，需要处理一下，此处与上次不同，选择使用 etoolbox 宏包提供的 \robustify 来进行处理
+% 同时结合 enumitem 宏包完成
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{etoolbox}
+\usepackage{enumitem}
+
+\newcommand*{\circled}[1]{\lower.7ex\hbox{\tikz\draw (0pt, 0pt)
+    circle (.5em) node {\makebox[1em][c]{\small #1}};}}
+\robustify{\circled} % 使用 \rubustify 进行强化
+
+\begin{document}
+\mbox{}\rlap{\rule{.7\linewidth}{.4pt}} % \mbox{} 用于绘制盒子，不具有线条；\rule[提示]{宽度}{高度} 用于制作标尺盒子； \rlap 用于叠加图形，有 "\llap" 和 "\rlap" 两种
+This is the circled number \circled{20}.
+
+\begin{enumerate}[label=\circled{\arabic*}] % 使用 enuitem 中的 \item 命令，将其中的 \label 替换为定义的样式，同时将数字类型定义为 "\arabic*"(阿拉伯数字)
+\item I
+\item am
+\item happy
+\item to
+\item today
+\end{enumerate}
+\end{document}
+```
+
+
+
+```latex
+%------------------------------------------------------------------------------------
+%2018.5.7
+```
+
+------
+
+
+
+## 多级列表
+
+```latex
+% 通常输入多级列表的方式
+\begin{itemize}
+\item 1
+\begin{itemize}
+\item 2
+\end{itemize}
+\end{itemize}
+
+% 也可以使用 iitem 包，此时输入较为方便
+\begin{itemize}
+\item 1
+\iitem 2
+\end{itemize}
+```
+
+
+
+## 在文本的同一行开始一个列表环境
+
+```latex
+% 有时希望在文本的同一行开始一个列表环境，而非在默认的下一行开始
+% 同时我们希望标签仍然在垂直方向上对齐
+% 此时可以使用 description 对其距离等进行修改
+\documentclass{article}
+\usepackage{enumitem}
+\usepackage{lipsum} % just for the example
+
+\newlength{\jeroenlen} % 设置长度
+\newenvironment{example} % 设置环境
+{\settowidth{\jeroenlen}{\textbf{Example:}}
+\begin{description}[leftmargin=\jeroenlen,labelwidth=0pt,labelsep=0pt]
+\item[\textbf{Example:}]
+\begin{itemize}[leftmargin=1.5em,labelsep=.5em]}
+{\end{itemize}\end{description}}
+
+\begin{document}
+\lipsum[2]
+\begin{example}
+\item Such and such
+\item So and so
+\item Enough
+\end{example}
+\lipsum[3]
+\end{document}
+```
+
+```latex
+% ------------------------------------------------------------------------------------
+% 2018.5.8
 ```
 
 ------
