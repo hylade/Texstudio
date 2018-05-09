@@ -2524,3 +2524,209 @@ This is the circled number \circled{20}.
 
 ------
 
+
+
+## 列表继续前文计数
+
+```latex
+% 对于一般的列表环境，即 enumerate 环境，当使用新的环境后，计数将重新从 1 开始
+% 使用 enumitem 宏包，并使用其 [resume] 参数能承接前文的数字
+\documentclass[a4paper]{article}
+\usepackage{enumitem} % load the package
+\begin{document}
+  \section{My items}
+    \begin{enumerate}
+      \item First item
+      \item Second item
+    \end{enumerate}
+  \section {Additional items}
+    \begin{enumerate}[resume] % tell the enumerate to resume numbering
+      \item Third item
+      \item Fourth item
+    \end{enumerate}
+\end{document}
+```
+
+
+
+## multienum排版
+
+```latex
+% multienum 使用简介
+\mitemx{} % 该行具有一个编号
+\mitemxx{}{} % 具有两个编号
+\mitemxxx{}{}{} % 具有三个编号
+\mitemxox{}{} % 具有三个编号，中间编号的左部为空白，所以第一个编号可以延伸到该空白中
+\mitemxxo{}{} % 具有三个编号，第三个编号的左部为空白，所以第二个编号可以延伸到该空白中
+```
+
+```latex
+% 实例
+%This is a 2-page sample illustrating how to use the
+%multienum package
+\documentclass{article}
+\setlength{\textwidth}{6in}
+\setlength{\textheight}{8.5in}
+\setlength{\topmargin}{-0.5in}
+\setlength{\oddsidemargin}{0.25in}
+\usepackage{multicol,multienum} % 引入包; multicol 多列使用
+\begin{document}
+\begin{center}
+{\Large\bf Sample formating using {\tt multienumerate}} % \tt 打印字体
+\end{center}
+
+\bigskip % 段落之间间距，同类型的还有 \medskip, \smallskip
+Sometimes we want to typeset the solutions to exercises. This
+is easy to do using the {\tt multienumerate} environment.
+\subsection*{Answers to All Exercises}
+\begin{multienumerate}
+\mitemxxxx{Not}{Linear}{Not}{Quadratic}
+\mitemxxxo{Not}{Linear}{No; if $x=3$, then $y=-2$.}
+\mitemxx{$(x_1,x_2)=(2 \frac{1}{3}t,t)$ or
+$(s,3s-6)$}{$(x_1,x_2,x_3)=(2 \frac{5}{2}s-3t,s,t)$}
+\mitemx{$(x_1,x_2,x_3,x_4)= (\frac{1}{4} \frac{5}{4}s
+\frac{3}{4}t-u,s,t,u)$
+or $(s,t,u,\frac{1}{4}-s \frac{5}{4}t \frac{3}{4}u)$}
+\mitemxxxx{$(2,-1,3)$}{None}{$(2,1,0,1)$}{$(0,0,0,0)$}
+\end{multienumerate}
+
+\bigskip
+\hrule
+
+\bigskip
+
+We can also enumerate the items using an even-only or odd
+only
+counter.
+\subsection*{Answers to Even-Numbered Exercises}
+\begin{multienumerate}[evenlist]
+\mitemxxxx{Not}{Linear}{Not}{Quadratic}
+\mitemxxxo{Not}{Linear}{No; if $x=3$, then $y=-2$.}
+\mitemxx{$(x_1,x_2)=(2 \frac{1}{3}t,t)$ or
+$(s,3s-6)$}{$(x_1,x_2,x_3)=(2 \frac{5}{2}s-3t,s,t)$}
+\mitemx{$(x_1,x_2,x_3,x_4)= (\frac{1}{4} \frac{5}{4}s
+\frac{3}{4}t-u,s,t,u)$
+or $(s,t,u,\frac{1}{4}-s \frac{5}{4}t \frac{3}{4}u)$}
+\mitemxxxx{$(2,-1,3)$}{None}{$(2,1,0,1)$}{$(0,0,0,0)$}
+\end{multienumerate}
+
+\hrule
+
+\subsection*{Answers to Odd-Numbered Exercises}
+\begin{multienumerate}[oddlist]
+\mitemxxxx{Not}{Linear}{Not}{Quadratic}
+\mitemxxxo{Not}{Linear}{No; if $x=3$, then $y=-2$.}
+\mitemxx{$(x_1,x_2)=(2 \frac{1}{3}t,t)$ or
+$(s,3s-6)$}{$(x_1,x_2,x_3)=(2 \frac{5}{2}s-3t,s,t)$}
+\mitemx{$(x_1,x_2,x_3,x_4)= (\frac{1}{4} \frac{5}{4}s
+\frac{3}{4}t-u,s,t,u)$
+or $(s,t,u,\frac{1}{4}-s \frac{5}{4}t \frac{3}{4}u)$}
+\mitemxxxx{$(2,-1,3)$}{None}{$(2,1,0,1)$}{$(0,0,0,0)$}
+\end{multienumerate}
+
+\bigskip
+\hrule
+
+\bigskip
+
+Sometimes we want to create sublists which are
+enumerated using an alpha counter.
+
+\begin{multienumerate}
+\mitemx{Which of the following numbers is the solution of the
+equation
+$x 3=7$:}
+\begin{multienumerate} % 此时选项名为(a),(b)……；当在一个 multienumerate 环境中嵌套一个 multienumerate 环境时，内容环境的编号将变为字母
+\mitemxxxx{1}{2}{3}{4}
+\end{multienumerate}
+\mitemx{The value of $\log_28$ is:}
+\begin{multienumerate}
+\mitemxxxx{1}{$-1$}{3}{$-3$}
+\end{multienumerate}
+\end{multienumerate}
+\pagebreak
+
+\begin{multicols}{2} % 两列
+\subsection*{Answers to All Exercises}
+\begin{multienumerate}
+\mitemxx{Not}{Linear}
+\mitemxx{Not}{Quadratic}
+\mitemxx{Not}{Linear}
+\mitemx{$(x_1,x_2)=(2 \frac{1}{3}t,t)$ or
+$(s,3s-6)$}
+\mitemx{$(x_1,x_2,x_3)=(2 \frac{5}{2}s-3t,s,t)$}
+\mitemx{$(x_1,x_2,x_3,x_4)= (\frac{1}{4} \frac{5}{4}s
+\frac{3}{4}t-u,s,t,u)$
+or $(s,t,u,\frac{1}{4}-s \frac{5}{4}t \frac{3}{4}u)$}
+\mitemxx{$(2,-1,3)$}{None}
+\mitemxx{$(2,1,0,1)$}{$(0,0,0,0)$}
+\mitemxx{Not}{Linear}
+\mitemxx{Not}{Quadratic}
+\mitemxx{Not}{Linear}
+\mitemx{$(x_1,x_2)=(2 \frac{1}{3}t,t)$ or
+$(s,3s-6)$}
+\mitemx{$(x_1,x_2,x_3)=(2 \frac{5}{2}s-3t,s,t)$}
+\mitemx{$(x_1,x_2,x_3,x_4)= (\frac{1}{4} \frac{5}{4}s
+\frac{3}{4}t-u,s,t,u)$
+or $(s,t,u,\frac{1}{4}-s \frac{5}{4}t \frac{3}{4}u)$}
+\mitemxx{$(2,-1,3)$}{None}
+\mitemxx{$(2,1,0,1)$}{$(0,0,0,0)$}
+\mitemxx{Not}{Linear}
+\mitemxx{Not}{Quadratic}
+\mitemxx{Not}{Linear}
+\mitemx{$(x_1,x_2)=(2 \frac{1}{3}t,t)$ or
+$(s,3s-6)$}
+\mitemx{$(x_1,x_2,x_3)=(2 \frac{5}{2}s-3t,s,t)$}
+\mitemx{$(x_1,x_2,x_3,x_4)= (\frac{1}{4} \frac{5}{4}s
+\frac{3}{4}t-u,s,t,u)$
+or $(s,t,u,\frac{1}{4}-s \frac{5}{4}t \frac{3}{4}u)$}
+\mitemxx{$(2,-1,3)$}{None}
+\mitemxx{$(2,1,0,1)$}{$(0,0,0,0)$}
+
+\end{multienumerate}
+
+\subsection*{Multiple Choice}
+\begin{multienumerate}
+\mitemx{Which of the following numbers is the solution of the
+equation
+$x 3=7$:}
+\begin{multienumerate}
+\mitemxxxx{1}{2}{3}{4}
+\end{multienumerate}
+\mitemx{The value of $\log_28$ is:}
+\begin{multienumerate}
+\mitemxxxx{1}{$-1$}{3}{$-3$}
+\end{multienumerate}
+\mitemx{Which of the following numbers is the solution of the
+equation
+$x 3=7$:}
+\begin{multienumerate}
+\mitemxxxx{1}{2}{3}{4}
+\end{multienumerate}
+\mitemx{The value of $\log_28$ is:}
+\begin{multienumerate}
+\mitemxxxx{1}{$-1$}{3}{$-3$}
+\end{multienumerate}
+\mitemx{Which of the following numbers is the solution of the
+equation
+$x 3=7$:}
+\begin{multienumerate}
+\mitemxxxx{1}{2}{3}{4}
+\end{multienumerate}
+\mitemx{The value of $\log_28$ is:}
+\begin{multienumerate}
+\mitemxxxx{1}{$-1$}{3}{$-3$}
+\end{multienumerate}
+\end{multienumerate}
+\end{multicols}
+
+\end{document}
+```
+
+```latex
+% -------------------------------------------------------------------------------------
+% 2018.5.9
+```
+
+------
+
