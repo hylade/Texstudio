@@ -1433,9 +1433,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 \DeclareOption*{\PackageWarning{\CurrentOption ignored}}
 \ProcessOptions
 \RequirePackage{verbatim}
-\newcommand{\skip@preamble}{%
-    \let\document\relax\let\enddocument\relax%
-    \newenvironment{document}{}{}%
+\newcommand{\skip@preamble}{
+    \let\document\relax\let\enddocument\relax
+    \newenvironment{document}{}{}
     \renewcommand{\documentclass}[2][subfiles]{}}
 \newcommand\subfile[1]{\begingroup\skip@preamble\input{#1}\endgroup}
 \endinput
@@ -2214,6 +2214,7 @@ This is the hyper-reference of Figure \ref{fig:test}.
 % 在标准文档类中，最大的标题是 \part，它在 book 和 report 中的层次是 [-1] ，在 article 类中的层级是 [0] 。因此，我们只需要将计数器设置为 -2 ，之后章节命令都将不编号
 \documentclass{ctexart}
 \makeatletter % 对于在文件中需要使用包含 "\@" 字样的命令时，需要借助 \makeatletter 和 \makeatother 命令，即通过前者使 "@" 变为普通字母，通过后者回到原始类
+% 符号 @ 是一个保留符号。它在用户编写 .tex 文档的时候和开发者编写宏包/文档类的时候具有不同含义。我们用 \makeatletter 将 @ 的含义切换到开发者模式；在进行修改之后，用 \makeatother 将 @ 的含义切换到用户模式
 \newcommand\specialsectioning{\setcounter{secnumdepth}{-2}}
 \makeatother
 \begin{document}
@@ -2729,4 +2730,33 @@ $x 3=7$:}
 ```
 
 ------
+
+
+
+## 参考文献标题编号
+
+```latex
+% 一般而言，论文中参考文献、索引等章节的标题是不编号的，但是在一些特殊情况下，我们可能为其编号
+% 对于参考文献而言，大体都是使用 thebibliography 环境进行排版，生产参考文献列表。该环境一方面打印参考文献标题，另一方面打印参考文献列表。打印参考文献标题的方式就是调用 \section* (在 article 文档类中) 或 \chapter* (在 book 类中)
+% 我们需要做的，就是重定义 thebibliography 环境，使其调用无星号的版本（此时标题将产生编号），即调用 \section 或 \chapter
+% thebibliography 环境对应的两个命令是 \thebibliography 和 \endthebibliography；而 \section* 或 \chapter* 调用位于 \thebibliography 中，故我们只需要使用 xpatch 或 etoolbox 宏包提供的 \xpatchcmd 或 \patchcmd 对 \thebibliography 打上补丁即可
+
+% \xpatchcmd 命令介绍
+% \xpatchcmd 命令接受五个参数：\xpatchcmd{命令}{搜索}{替换}{成功}{失败}
+% 命令：待处理的命令
+% 搜索：需要被替换的部分
+% 替换：将被替换的内容
+% 成功：替换成功执行的内容
+% 失败：替换失败执行的内容
+
+% 实现代码
+\documentclass{article}
+\usepackage{xpatch}
+\xpatchcmd{\thebibliography}{\section*}{\section}{}{}
+\begin{document}
+\begin{thebibliography}{0}
+    \bibitem{citekey} test % 对于 \bibitem ，一般使用 \bibitem[label]{cite_key} 当 [label] 缺少时，则自动使用 enumiv 计数器，对于 {citekey} 则是用来引用 
+\end{thebibliography}
+\end{document}
+```
 
