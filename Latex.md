@@ -2777,3 +2777,51 @@ $x 3=7$:}
 
 ------
 
+
+
+## 实现参考文献与正文的双向链接
+
+```latex
+% 在正文中引用参考文献时，一般需要使用 hyperref 宏包，然后，点击医用链接即可跳转到相应的参考文献，但若文章内容较多，此时通过参考文献查找到正文相应的引用的位置就较为麻烦
+% 可以通过 hyperref 的参数 backref = page 或 pagebackref 即可
+% 具体使用方法如下：
+\usepackage[linkcolor=blue,citecolor=blue,backref=page]{hyperref}
+```
+
+
+
+## thebibliography 环境
+
+```latex
+% 可以不通过 .bib 文件来生成参考文献环境，即使用默认的 thebibliography 环境
+% 参考文献格式
+\begin{thebibliography}{编号样本}
+\bibitem[记号]{引用标记}条目
+\end{thebibliography}
+
+% 实例
+\documentclass{ctexart}
+\begin{document}
+引用一篇文章 \cite{article1}\\
+引用一本书 \cite{boobk1}\\
+
+\renewcommand\refname{参考文献}
+\begin{thebibliography}{99} % 数字 99指的是参考文献的项目按照数字进行编号，并且最多为99个，可以按照需求进行更改
+\bibitem{article1}文章标题 作者 期刊 年代 页码……
+\bibitem{book1}书标题 作者 出版社 年代
+\end{thebibliography}
+
+\end{document}	
+
+% 如何将文档类中的 Reference 改为中文的 '参考文献'
+% 若是 article 类，使用 \renewcommand\refname{参考文献}
+% 若是 book 类，使用 \renewcommand\bibname{参考文献}
+```
+
+```latex
+% ---------------------------------------------------------------------------------------
+% 2018.5.12
+```
+
+------
+
