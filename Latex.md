@@ -2836,6 +2836,13 @@ $x 3=7$:}
 \def\citepunct{],[}
 \def\citedash{]-[}
 % 此时，若连续引用的文献较少时，文献之间通过 ',' 连接，若连续文献较多时，则通过 '-' 连接
+
+% -------------------------------2018.6.1-----------------------------------------------------
+% 当不采用 cite 包时，对于连续参考文献， latex 应该是默认连续，采用 '-' 连接，如 "[1-3]"，但不会对英文引用名缩写
+% 当需要对英文引用名缩写时，可以使用 natbib 包
+\usepackage[numbers,sort&compress]{natbib}
+% 对于上述代码示例，numbers 表示数字类型的引用名，并置于前； sort&compress 表示对于英文引用名，按照字母顺序排序，并且采用缩写，并置于后；
+% 将两者顺序调换，则在输出中英文缩写在前，数字内容在后
 ```
 
 
@@ -2911,6 +2918,36 @@ pages = {379--423, 623--656},
 ```latex
 % ------------------------------------------------------------------------------------------
 % 2018.5.17
+```
+
+------
+
+
+
+## 将公式编号样式变为参考文献中样式
+
+```latex
+% 可以通过改变相应的命令样式来实现
+% 示例
+\documentclass{article}
+\usepackage{amsmath}
+\setlength\textwidth{181.0pt}
+\makeatletter
+\def\tagform@#1{\maketag@@@{\ignorespaces[#1]\unskip\@@italiccorr}}
+\makeatother
+
+\begin{document}
+\section{Test}
+\begin{equation}\label{eq:1}
+a+b=c
+\end{equation}
+This is a equation’s example.please see \eqref{eq:1}.
+\end{document}
+```
+
+```latex
+%---------------------------------------------------------------------------------------------
+% 2018.6.1
 ```
 
 ------
