@@ -2952,3 +2952,69 @@ This is a equation’s example.please see \eqref{eq:1}.
 
 ------
 
+
+
+## Latex辅助文件
+
+```latex
+% 对于 Latex 在使用交叉引用、参考文献、目录等功能时，首先需要生成辅助文件，然后再次编译时读入相应的辅助文件才能得到正确的结果
+% Latex 中辅助文件一般有以下几种
+.log % 排版引擎生成的日志文件，供排查错误使用
+.aux % 生成的主辅助文件，记录交叉引用、目录、参考文献的引用等
+.toc % 生成的目录记录文件
+.lof % 生成的图片目录记录文件
+.bbl % BibTex 生成的参考文献记录文件
+.blg % BibTex 生成的日志文件
+.idx % LaTex 生成的供 makeindex 处理的索引记录文件
+.ind % makeindex 处理 .idx 文件，生成的格式索引记录文件
+.ilg % makeindex 生成的日志文件
+.out % hyperref 宏包生成的 PDF 书签记录文件
+
+% 当某些辅助文件中出现某些错误时，若没有删除原辅助文件，继续编译，那么错误的部分仍然在，读取的时候，读取到的仍然是错误的部分，所以需要将原辅助文件删除，重新编译生成相应的辅助文件，再二次编译，从而获得正确的结果 
+```
+
+
+
+## Latex 宽度
+
+```latex
+% latex 中宽度涉及到页面宽度的有以下几种：
+\linewidth % 当前行的宽度
+\columnwidth % 当前分栏的宽度
+\textwidth % 整个页面版芯的宽度
+\paperwidth % 页面纸张的宽度
+
+$ 宽度关系
+% 对于单栏文本， \columnwidth 和 \textwidth 应该保持一致；
+% 对于多栏文本， \textwidth = n * \columnwidth + (n - 1) * \columnsep
+% 对于 minipage环境，除了 \paperwidth 之外，其余三个宽度值都将随 minipage 的宽度发生变化，并且当 minipage环境结束时，恢复原样
+% 对于  parbox ， \textwidth 与 \columnwidth 不会改变，但 \linewidth 会发生变化
+
+% 对于各个宽度， \linewidth 是相对最灵活的值，它在 list 环境中 或在 \parbox 中都将发生变化
+
+$ 总结
+% 当需要在列表中使用表格、图片的宽度时，应该使用 \linewidth
+% 需要充满整个页面宽度时，应该使用 \textwidth ；例如 figure / table
+% 需要充满整个分栏时，需要使用 \columnwidth ；例如 figure / table / tabularx / tabu
+
+% ---------------------------------------------------------------------------------------------
+% 对于 minipage 和 \parbox
+% 对于整个段落需要放入一个盒子中时，可以使用 \parbox 或者 minipage ，两者语法类似，并且都提供了对齐方式、宽度等的选项。
+% 需要注意：这里的对齐方式是指盒子与周围内容的纵向关系，分别用 t 、 c 、 b 表示居顶、居中和居底对齐
+% \parbox 使用
+\parbox[pos][height][contentpos]{width}{text}
+% minipage 使用
+\begin{minipage}[pos][height][contentpos]{width}
+text
+\end{minipage}
+
+% 两者区别在于，在 \parbox 中无法使用全部命令和环境，但在 minipage 中，几乎可以使用所有命令和环境
+```
+
+```latex
+% ---------------------------------------------------------------------------------------------
+% 2018.6.2
+```
+
+------
+
