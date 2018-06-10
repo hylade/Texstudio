@@ -3018,3 +3018,165 @@ text
 
 ------
 
+```latex
+% 将脚注缩进固定宽度
+% 需要 scrextend 包，命令如：
+\deffootnote[<mark width>]{<indent>}{<parindent>}{<definition>}
+% ---------------------------------------------------------------------------------------------
+\documentclass{book}
+\usepackage{scrextend} % 引用缩进包
+\deffootnote[1.5em]{1.5em}{1em}{\thefootnotemark.\space} % 缩进数量定义
+\usepackage{lipsum} % 用于生成随机文字
+\usepackage{hyperref} %用于生成超链接
+
+\begin{document}
+\mainmatter % \mainmatter 将打开阿拉伯页码计数器，并对页码从新计数
+\setcounter{footnote}{8} % 从 '8' 开始计数，则生成的脚注开始数字为 '9'
+a\footnote{\lipsum*[2]}b\footnote{\lipsum[2]\lipsum*[3]}
+\end{document}
+
+% ---------------------------------------------------------------------------------------------
+% 也可以通过 footmisc 包来实现
+\documentclass{book}
+\usepackage[hang]{footmisc}
+% do this \AtBeginDocument so that all font settings will be already made
+\AtBeginDocument{
+ % set the \footnotemargin to 1.5em at \footnotesize
+ \footnotesize\setlength{\footnotemargin}{1.5em}\normalsize
+ % set the footnote parindent equal to the normal parindent
+ \edef\hangfootparindent{\the\parindent}
+ % no parskip in foonotes
+ \renewcommand{\hangfootparskip}{0pt}
+}
+\usepackage{lipsum}
+\begin{document}
+\mainmatter
+\setcounter{footnote}{8}
+a\footnote{\lipsum*[2]}b\footnote{\lipsum[2]\lipsum*[3]}
+\end{document}
+```
+
+```latex
+% center 环境与 \centering 命令的区别
+% 很多情况再插入图片时，会使用 \begin{center}...\end{center}来使图片居中，但这个环境会产生额外的垂直空白，应该是使用 \centering 命令
+\usepackage{graphicx}
+\begin{figure}[ht]
+\centering
+\includegraphics{filename}
+\caption{text}
+\end{figure}
+
+% 对于两者，看起来效果是一样的，但是略有差异
+% 对于 center 环境，定义如下：
+\def\center{\trivlist \centering\item\relax}
+\def\endcenter{\endtrivlist}
+% 所以对于 center 环境，实际是一个 trivlist 列表，也是产生空白的原因
+
+% 对于 \centering，定义如下
+\def\centering{%
+  \let\\\@centercr
+  \rightskip\@flushglue\leftskip\@flushglue
+  \parindent\z@\parfillskip\z@skip}
+% 可以看出， \centering 环境实际上是通过 \leftskip ， \rightskip 命令来实现居中效果
+% 所以不会产生垂直空白，但由此需要限制命令作用的范围
+{\centering Text    
+}
+```
+
+```latex
+%----------------------------------------------------------------------------------------------
+% 2018.6.9
+```
+
+
+
+```latex
+% mathptmx 宏包是一个为 LaTex 设计的字体哄好，默认 rmfamily 为 Nimbus Roman No9 L 类型字体；同时将数学字体设置为 Italic 字形
+% 使用该宏包可能需要借助 fontenc 宏包来辅助设置字体编码
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\begin{document}
+This is the typeface Nimbus Roman No9 L, and fontface for mathematics has been modified to the Italic counterpart.
+Enjoy!
+\end{document}
+% 对于 fontenc 宏包，用于英文，主要是用于欧洲重音字符等
+% fontenc 用来嵌入字体（一般用 T1 ，不用 OT1 ; inputenc 用来识别输入编码（这个只在写非英文的、带声调的拉丁语系如法、德、中欧和UTF8有点意义，CJK完全用的自己的体系）
+%　对于 T1 ：
+%　在 LaTeX 中，默认字体是按 OT1 编码的计算机现代字体，它不包含欧洲重音字符，因此也无法对欧洲文字进行断词处理；该宏包可以调用各种编码字体，并可有多重选项，其中最后的选项将成为系统默认编码；欧洲 EC 字体就是采用 T1 科克编码字体，它把有关重音符号的一些字母作为独立的字母，而不是像 OT1 编码，将普通字母和重音符号进行组合。华盛顿大学斯拉夫编码的 OT2 字体可用于俄语、保加利亚语等斯拉夫语的排版
+% 例如，在 OT1 编码下（或是其它不包含字符形状 ö 的编码），\"{o} 会被翻译成 \accent"7F o；在 T1 编码下，则是 \char"F6
+
+% ----------------------------------------------------------------------------------------------
+% 作为 mathptmx 类似的宏包， newtx 宏包也使用 Nimbus Roman No9 L 及 Itallic 字形
+% 同时，newtx 还会做额外的工作：
+% 将正文 Sans Serif 字体设置为 Helvetica （某个开源近似版）
+% 将正文 Monospace 字体设置为 Times 的等宽版本
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext, newtxmath}
+\begin{document}
+This is the typeface Nimbus Roman No9 L, and fontface for mathematics has been modified to the Italic counterpart.
+\textsf{The sans serif family is Helvetica} and \texttt{the monospace family is also Times}.
+Enjoy! % \textsf 为无衬线字体； \texttt 为打字机字体
+\end{document}
+```
+
+```latex
+% LaTex 字体机制
+$ .def 文件
+% t1enc.def 之类的 <encoding>enc.def 文件定义了字符形状与编码的对应关系，LaTeX 读入这些文件之后，才能在相应的编码下正确调用字符形状来排版。在任意时刻，都有一个当前的字体编码。诸如 \"{o} 的命令，在不同编码下的效果是不一样的。例如，在 OT1 编码下（或是其它不包含字符形状 ö 的编码），\"{o} 会被翻译成 \accent"7F o；在 T1 编码下，则是 \char"F6
+% 当加载 fontenc 宏包的时候，LaTeX 就会读入 <encoding>enc.def 文件。具体读入的文件，由 fontenc 宏包的参数确定。每次读入 <encoding>enc.def 文件就改变一次当前字体编码。和大多数宏包不同，fontenc 宏包可以加载多次，以便根据不同的字体指定不同的编码。有一些字体相关的宏包，会在内部隐式地调用 fontenc 宏包（比如 textcomp 宏包）。在 \begin{document} 处的字体编码，则是最后一次传给 fontenc 宏包的参数
+
+$ .fd 文件
+% 当 LaTeX 遇到 \fontfamily{<family>}\selectfont 的时候（可能隐式地调用，比如在 \ttfamily 之类的字体声明处，以及在 \textsf 之类的字体命令处），LaTeX 会在内部标中查询是否有已知的，由 \DeclareFontFamily{<encoding>}{<family>}{<tokens>} 定义的组合
+
+% <encoding>+<family>
+% <encoding> 就是当前的字体编码。
+% 假设当前的字体编码是 T1，然后希望使用 Palatino 字族（ppl），但 T1+ppl 的组合没有定义（也就是 \T1+ppl 命令未定义，对的，命令中间有个加号），那么 LaTeX 就会去寻找 t1ppl.fd 或者大写版本的 T1ppl.fd 文件。如果二者都找不到，那么 LaTeX 就会输出警告，告诉用户「当前的字体我找不到，不过我会用另外的字体来替代。不过，这种替代，不会改变当前的字体编码
+
+% .fd 文件总是以 \DeclareFontFamily 声明开头，然后跟着若干个 \DeclareFontShape 命令。这些命令组合在一起，对应了 <encoding>+<family> 的组合
+%当然，你也可以在导言区里写 \DeclareFontFamily 或者 \DeclareFontShape 这样的命令。\DeclareFontShape 必须与紧跟的 \DeclareFontFamily 对应。这些声明会对应字体四个维度的属性声明，并对应一个字体尺寸文件（font metric file）
+
+\usefont{T1}{ppl}{b}{it} %会指向 pplb8t 这个字体尺寸。具体来说，字体尺寸文件又两种：.vf 文件或者 .tfm 文件。如果存在 pplb8t.vf 文件，那么 TeX 会优先加载它，否则就会加载 pplb8t.tfm 文件。二者必需有一个，否则就会报错
+
+%在 \DeclareFontShape 命令中，你可以设定字体替换等规则；如果 LaTeX 没有找到合适的字体替换规则，那么就会使用默认字体去替换。如果 .fd 文件里，或者导言区中的，\DeclareFontShape 写错了，也会导致错误（Corrupt NFSS tables）
+
+$ .vf 文件
+% 字体尺寸文件可以是虚拟的，pplb8t 正是这种情况。.vf 尺寸文件中有字符边界框、意大利体修正、铅空、连字等信息，还有一些关于从其它文件中（虚拟的或者实际存在的）选择时字符形状的信息。此处，pplb8t.vf 选择了一个实际存在的字符形状 pplb8r
+
+(MAPFONT D 0
+   (FONTNAME pplb8r)
+   (FONTCHECKSUM O 25012244013)
+   (FONTAT R 1.0)
+   (FONTDSIZE R 10.0)
+   )
+
+% 并按照 T1 字体编码重新对字符形状做了排序。例如，在 pplb8t.vf 的 "F7" 位上 （八进制 `367），有如下声明
+
+(CHARACTER O 367
+   (CHARWD R 0.832996)
+   (CHARHT R 0.485498)
+   (CHARDP R 0.011493)
+   (MAP
+      (SETCHAR O 234)
+      )
+   )
+
+% 即字符形状 œ（你在 LaTeX 里可以用 \oe 输出它）实际会在 pplb8r 的以八进制计算的第 `234 个位置（十六进制："9C）中取得，不过实际的用户是不会像关心它的。这里也包含了关于字符形状的尺寸信息：宽度 8.32996pt、高度 4.85498pt、深度 0.11493pt，并且意大利体修正为 0（这是在字体大小为 10pt 时候的值，否则需要按比例做额外的换算）
+
+$ .tfm 文件
+% .tfm 文件（在本例中 pplb8r.tfm 文件必须存在）中的内容格式和 .vf 文件的格式完全相同，不过，它可以指向其他字体尺寸文件
+
+$ .vf 和 .tfm 文件区别
+% .tfm 为字体描述文件，用于设定字体的宽、高和间距等，LaTex用以规划页面
+% .vf 为Tex 虚拟字体
+
+$ 虚拟字体
+% 从不同物理字体文件中分别选取部分字符，组成的字体即为"虚拟字体"；在 LaTex 中，虚拟字体就像是真实字体一样
+```
+
+```latex
+% ----------------------------------------------------------------------------------------------
+% 2018.6.10
+```
+
