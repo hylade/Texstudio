@@ -3180,3 +3180,58 @@ $ 虚拟字体
 % 2018.6.10
 ```
 
+
+
+```latex
+%　在 Tex Live 中如何安装已经下载好的 .sty 宏包
+
+% 1.
+% 获取相应的 .sty 文件；若找的到相应的 .sty 文件，就直接下载；若是文本文件，就先将其拷贝合适的位置，用 txt 打开，粘贴，再更改后缀名为 .sty 即可；注意，需要将完成的 .sty 文件放入到一个同名的文件夹中。如，mcode.sty 文件的文件夹名应为 mcode
+
+% 2.
+% 将该文件夹放在 Tex Live 相应的宏包文件夹中；本机相应位置为: D:\texlive\texmf-dist\tex\latex 。此时该宏包与其他宏包文件处于同一级mull
+
+% 3.
+% win+r 输入 cmd 进入 dos ，然后输入 texhash ，以用于更新目录以便 Latex 能找到安装的新宏包
+```
+
+
+
+```latex
+% 如何使用 times new roman 字体
+% 使用 times 宏包后，可以将文本的缺省字体换成 times new roman 字体；若安装有 mathtime 宏包，也可将数学环境中的字体都变成 times new roman 字体
+\usepackage{times}
+\usepackage[mtbold, mtpluscal, mtplusscr]{mathtime}
+
+% 当没有 mathtime 宏包时，使用 mathptmx 也可
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{times}
+\usepackage{mathptmx}
+\setlength\textwidth{207.0pt}
+\begin{document}
+
+Text
+Text Text Text Text 
+Text Text Text Text
+
+ \begin{equation} (a+b)^2 = a^2 + 2ab
++b^2 \end{equation}
+ \begin{equation} (a-b)^2 = a^2 - 2ab + b^2
+\end{equation}
+
+ $$
+ \bar{x}
+ $$
+\begin{equation}
+\sum_{i=0}^n = \int_a^b f(x)dx \end{equation}
+
+\end{document}
+```
+
+```latex
+% ------------------------------------------------------------------------------------------------
+% 2018.6.11
+```
+
