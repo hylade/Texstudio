@@ -3235,3 +3235,260 @@ Text Text Text Text
 % 2018.6.11
 ```
 
+
+
+```latex
+% 浮动体即为会移动的文本框
+
+% 为什么要使用浮动体
+% 由于图片表格等占据篇幅较大的内容，若强行插入再"当前位置"是不合适的，通常会造成大片的空白，因此需要浮动
+
+% 浮动体示例：
+\documentclass{article}
+\usepackage{mwe}  % 产生随机文字
+\begin{document}
+Foo
+\begin{figure}[htb]  % a float environment without \caption containing text
+\blindtext
+\end{figure}
+bar
+\end{document}
+
+% 通过编译可知，浮动体中，字体、分词、拆行等行为与正文相同；只不过，由于 figure 环境整体移动，使 Foo 与 bar 排到了同一行，而 \blindtext 的输出结果则移动到了 Foo bar 下方
+
+% 在 Tex 的排版过程实际是一个盒子套盒子的搭积木过程（Tex 在排版时不关心具体内容，只关心每个尺寸的大小）
+\documentclass{article}
+\usepackage{mwe}  % 产生随机文字
+\usepackage[showframe]{geometry}  % 显示内容的轮廓
+\begin{document}
+Foo
+\begin{figure}[htb]
+\rule{4cm}{3cm}\quad\rule{4cm}{3cm}\quad\rule{4cm}{3cm}\quad\rule{4cm}{3cm}
+\end{figure}
+bar
+\end{document}
+
+% 通过 geometry 宏包的辅助，可见，浮动体中产生了4个黑色的标尺（即通过 \rule{<width>}{<height>} 显示）
+% 此处，浮动体内，同一行有4个"字符"（可以将该类内容想像为超大的字符）；由于版面宽度不足，所以 Tex 在第三个字符后折行
+
+% ------------------------------------------------------------------------------------------------
+% 浮动体题注
+\documentclass{article}
+\usepackage{mwe}  % for dummy text
+\usepackage[showframe]{geometry}  % for showing frames of pages
+\begin{document}
+Foo
+\begin{figure}[htb]
+\rule{4cm}{3cm}\quad\rule{4cm}{3cm}\quad\rule{4cm}{3cm}\quad\rule{4cm}{3cm}
+
+\caption{Foo bar.}
+\end{figure}
+bar
+\end{document}
+
+% 产生的结果中， Figure 1 是题注的标签，包含题注的类型与编号； Foo bar. 是题注的文本；两者之间通过分隔符"label sep"分割，此处使用 :
+% 题注默认格式为：
+% 居中： \centering
+% 罗马字族： \rmfamily
+% 直立字形： \upshape
+% 标准字体： \normalsize
+% 标准字重： \mdseries
+
+% 由此我们可以手动创建一个相同的题注，但该题注不能自动编号
+\centering
+{\rmfamily\upshape\normalsize\mdseries Figure 1: Foo bar.}
+
+% ------------------------------------------------------------------------------------------------
+% 并排摆放，各自题注
+% 由于题注分别针对当前环境居中，由此，我们希望为并排摆放的两个图片分别添加题注，此时需要将内容分别放置在两个独立的盒子中
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[showframe]{geometry}  % for showing frames of pages
+\begin{document}
+Foo
+\begin{figure}[htb]
+\centering
+\begin{minipage}{0.48\linewidth}
+\centering
+\includegraphics[width = \linewidth]{example-image-a} % 由于图片位于小页环境中，所以 \includegraphics 环境宽度参数应设置为 \linewidth ，表示当前小页的行宽
+\caption{Dummy Caption A.}
+\end{minipage}\hfill % 在内容两边填充空白，使其充满一行
+
+\begin{minipage}{0.48\linewidth}
+\centering
+\includegraphics[width = \linewidth]{example-image-b}
+\caption{Dummy Caption B.}
+\end{minipage}
+\end{figure}
+bar
+\end{document}
+
+% ------------------------------------------------------------------------------------------------
+% 纵向摆放，无题注
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[showframe]{geometry}  % for showing frames of pages
+\begin{document}
+Foo
+\begin{figure}[htb]
+\centering
+\includegraphics[width = .6\linewidth]{example-image-a}\\[2ex] % [2ex] 表示图片之间的间距，可以更改
+\includegraphics[width = .6\linewidth]{example-image-b}
+\end{figure}
+bar
+\end{document}
+% 由此可见，可以使多张图片的总宽度大于页面宽度，便会换行；或者手动换行；
+
+% ------------------------------------------------------------------------------------------------
+%　多个元素与子题注
+%　当希望给每个元素加上题注，但同时有共享一个题注，此时每个元素的题注便应是子题注
+% 此时可以选择使用 subfig 宏包，该宏包中的 \subfloat 命令；或者使用 subcaption 中的 \subcaption 命令
+% \subfloat 命令是为了其中的内容创建一个盒子，并支持设置子题注
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage[showframe]{geometry}  % for showing frames of pages
+\begin{document}
+Foo
+\begin{figure}[htb]
+\centering
+\subfloat[Subcaption A]{\includegraphics[width = .48\linewidth]{example-image-a}}\hfill
+\subfloat[Subcaption B]{\includegraphics[width = .48\linewidth]{example-image-b}}
+\caption{Two figures.}
+\end{figure}
+bar
+\end{document}
+
+% 当使用 caption 宏包设置题注时，应该首先使用 \subcaption 命令
+% 它的使用方法与 caption 宏包命令较为相近，按照前述"并排摆放，各自题注"命令，只需将 \caption 命令改为 \subcaption 即可
+% 但使用 subcaption 宏包中 \subcaption 命令需要设置小页环境，此时代码较多，较为复杂
+% 此时可以使用 subcaption 中另一个命令 \subcaptionbox ；它的用法类似与 \subfloat
+\subcaptionbox{Dummy Subcaption A.}{\includegraphics[width = .48\linewidth]{example-image-a}}\hfill
+\subcaptionbox{Dummy Subcaption B.}{\includegraphics[width = .48\linewidth]{example-image-b}}
+```
+
+```latex
+% 改变标题标签的数字格式或字母格式
+\renewcommand{\thetable}{\alph{table}}
+\renewcommand{\thefigure}{\Alph{table}}
+\renewcommand{\thesubtable}{\Roman{subtable}}
+\renewcommand{\thesubfigure}{\arabic{subfigure}}
+
+% 每一个标签都指定了一个你要更改的标签以及希望显示的标签类型，如(alph{table})
+```
+
+### 显示序号方式
+
+|  计数器类型  |     实现代码     | 示例 |
+| :----------: | :--------------: | :--: |
+|  阿拉伯数字  | \arabic{counter} | 1,2  |
+|   小写字母   |  \alph{counter}  | a,b  |
+|   大写字母   |  \Alph{counter}  | A,B  |
+| 小写罗马数字 | \roman{counter}  | i,ii |
+| 大写罗马数字 | \Roman{counter}  | I,II |
+
+
+
+```latex
+% 当有章节时，需要在图片内添加章节编号，如：
+\renewcommand{\thefigure}{\thechapter.\Alph{figure}} % 将图片编号改为 1.A
+```
+
+
+
+```latex
+% Caption 宏包选项与设置
+% 可以设置包括编号分离、编号格式、编号与标题的字体及样式等
+% 要使用这些选项，可以在引入宏包时进行设置：
+\usepackage[OPTIONS]{caption}
+\usepackage[OPTIONS]{subcaption}
+
+% 也可以在使用命令时进行设置，使所有后面的标题都具有设置的样式
+\captionsetup[FLOAT_TYPE]{OPTIONS}
+
+% 对于 FLOAT_TYPE 可以是图、表、子图、子表等
+% 当使用 \captionsetup 时，后续标题都将使用设置的格式；也可以选择将 \captionsetup 放入表、图等环境中，此时，只对改图、表有效
+
+% ------------------------------------------------------------------------------------------------
+% for figures: caption label is italic, the caption text is bold / italic
+\captionsetup[figure]{labelfont=it,textfont={bf,it}}
+% for subfigures: caption label is bold, the caption text normal.
+% justification is raggedright (i.e. left aligned)
+% singlelinecheck=off means that the justification setting is used even when the caption is only a single line long.
+% if singlelinecheck=on, then caption is always centered when the caption is only one line.
+\captionsetup[subfigure]{labelfont=bf,textfont=normalfont,singlelinecheck=off,justification=raggedright
+
+% 此时，对于子标题是左对齐，这是由于关闭了 singlelinecheck，使得单行标题使用校正设置，否则，它将居中
+
+% 对于上述使用方法，也可以在引入相应宏包时进行设置，具有相同效果，但此时全文标题与子标题都将具有设置的效果
+\usepackage[labelfont=it,textfont={bf,it}]{caption}
+\usepackage[labelfont=bf,textfont=normalfont,singlelinecheck=off,
+justification=raggedright]{subcaption}
+```
+
+
+
+### 编号分离
+
+```latex
+% 可以通过 \captionsetup 中 labelformat 和labelsep 选项进行设置
+```
+
+labelformat 选项可以设置为：
+
+|      标签格式      |            结果            |
+| :----------------: | :------------------------: |
+| labelformat=empty  | 没有标签，即没有数字或字母 |
+| labelformat=simple |    标题中显示数字或字母    |
+| labelformat=parens |     数字或字母在括号中     |
+
+```latex
+% 对于 labelsep 选项，可以设置为：
+labelsep = none
+labelsep = colon
+labelsep = period
+labelsep = space
+labelsep = quad
+labelsep = newline
+```
+
+```latex
+% 编号分离设置示例：
+\captionsetup[figure]{labelformat=parens, labelsep=newline}
+\captionsetup[subfigure]{labelformat=simple, labelsep=colon}
+```
+
+
+
+```latex
+% 对于无序号的标题和表格
+% 可以使用不显示标题序号的命令 \caption*
+\begin{figure}[tbp]
+	\centering	
+	\includegraphics[width=1in]{1.jpg}
+	\caption*{Unnumbered figure caption.}
+\end{figure}
+
+% 设置子图与子表标题的位置
+% 对于图、表，标题的位置可以设置在该浮动体的上方或下方，只需要将命令 \caption 置于图表的上方或下方即可
+```
+
+
+
+```latex
+% 重置标题计数器
+% 若需要重新计数标题序号，可以使用下述方法
+\setcounter{figure}{0}
+
+% 也可以使用其他的名称，不仅仅是 figure ，同时开始计数的值也可以不是 0
+```
+
+
+
+```latex
+% 更改标题名称
+% 当不希望图表名称是默认的如 "Fig." 或 "Figure" 或 "Table" 或 "Tab." 时，可以通过 \renewcommand 更改相应的名称
+\renewcommand{\tablename}{Tbl}
+\renewcommand{\figurename}{Image}
+```
+
