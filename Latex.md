@@ -3635,3 +3635,119 @@ dbltopnumber （默认为2） 在双栏排版中，横跨双栏顶部浮动体�
 % -------------------------------------------------------------------------------------------------
 % 2018.6.13
 ```
+
+
+```latex
+% 浮动体处理超宽问题
+
+% 浮动体主要用于处理高度比较大，且不不方便分割的内容：比如图片和表格；实际上，此类内容除了高度较大外，宽度一般也较大。 Latex 在水平方向，会从版芯左边界开始排版，若图片或者表格的宽度超过版芯的宽度，此时需要进行处理
+
+% 缩小
+% 对于尺寸过大的内容，最直接的方法便是缩小；对于图片，若使用 graphicx 宏包，便可以通过 width = \linewidth 的参数将图片缩放到填满页面宽度大小；对于表格，也可以通过 graphicx 宏包中的 \resizebox 命令进行处理
+% 示例
+\documentclass{article}
+\usepackage{showframe}
+\usepackage{graphicx}
+\begin{document}
+\begin{table}[!htb]
+\centering
+\caption{Oh, this table is overfull!}\label{tab:overfull}
+\rule{1.1\linewidth}{3cm}
+\end{table}
+
+\begin{table}[!htb]
+\centering
+\caption{Imagine that this is a table.}\label{tab:resized}
+\resizebox{\linewidth}{!}{\rule{1.1\linewidth}{3cm}}
+\end{table}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width = \linewidth]{example-image} % 内嵌图形
+\caption{A fit figure.}\label{fig:example-image}
+\end{figure}
+
+% -------------------------------------------------------------------------------------------------
+% 居中
+
+% 由于图表在缩小后可能看不清；对于 \verb 之类的内容，不能放入大多数 box 之内
+% 此时，我们可以对图表进行居中处理；由于超宽图表不居中的原因在于 Latex 从版芯左边界开始排版，所以只需要让 Latex 不从版芯的左侧开始排列就能解决该问题
+% 在 Latex 中决定开始排版位置的参数是 \leftskip 这个宏，在 Latex 中它被默认为 z@ 
+% 我们可以修改这个宏，比如改为 \setlength{\leftskip}{-20pt} ，表示 Latex 将从版芯左侧边界左边的 20pt 开始排版
+
+% 同理，在 Latex 中还有 \rightskip 用于确定水平方向排版的终止位置与版芯右边界的距离
+% 左右侧的 skip 类似于两个弹簧，向中间挤压内容，所以，我们不难对 \leftskip 和 \rightskip 进行以下处理
+1.默认情况下，应贴着两侧边界
+2.最差情况，允许内容向左右侧向两侧延伸，超过版芯但不超过纸张宽度
+3.同时具有让内容居中的能力
+% 所以大致命令应为：
+\setlength{\leftskip}{0pt plus 1fil minus \marginparwidth}
+\setlength{\rightskip}{\leftskip}
+
+% 为了使用方便，我们可以将其定义为一个新命令：
+\makeatletter
+\newcommand*{\centerfloat}{%
+  \parindent \z@
+  \leftskip \z@ \@plus 1fil \@minus \marginparwidth
+  \rightskip \leftskip
+  \parfillskip \z@skip}
+\makeatother
+
+% 示例：
+\documentclass{article}
+\usepackage{showframe}
+\usepackage{graphicx}
+\makeatletter
+\newcommand*{\centerfloat}{
+  \parindent \z@
+  \leftskip \z@ \@plus 1fil \@minus \marginparwidth
+  \rightskip \leftskip
+  \parfillskip \z@skip}
+\makeatother
+\begin{document}
+\begin{table}[!htb]
+\centerfloat
+\caption{Oh, this table is adjusted!}\label{tab:adjusted}
+\rule{1.1\linewidth}{3cm}
+\end{table}
+\end{document}
+
+% 对于上述命令， adjustbox 宏包具有类似的效果；同时，它里面的命令参数与 graphicx 宏包中的 \includegraphics 的 key-value 参数类似，用于实现各类 box 效果。它的优秀之处在于，内嵌的环境或者宏都适用于 \verb 之类的内容
+% 示例
+\documentclass{article}
+\usepackage{showframe}
+\usepackage{adjustbox}
+\begin{document}
+\begin{table}[!htb]
+\centering
+\caption{Oh, this table is adjusted by the package adjustbox!}\label{tab:adjusted}
+\adjustbox{center}{\rule{1.1\linewidth}{3cm}}
+\end{table}
+\end{document}
+
+% -------------------------------------------------------------------------------------------------
+% 旋转
+
+% 若超宽不是特别大，可以考虑将其旋转90°
+% 此时，需要使用 rotating 宏包中提供的 sidewaystable 和 sidewaysfigure 环境（还包括带 * 版本，用于在双栏模式下通栏排版），分别对应于 table 和 figure 
+
+% 示例
+\documentclass{article}
+\usepackage{showframe}
+\usepackage{rotating}
+\begin{document}
+\begin{sidewaystable}[!htb]
+\centering
+\caption{Let's rock!}\label{tab:rotated}
+\rule{0.8\linewidth}{3cm}
+\end{sidewaystable}
+\end{document}
+
+% 此时需要注意的是，旋转之后的长、宽就交换了，所以示例中的 0.8\linewidth 表示0.8倍的版芯高度；对于 rotating 宏包，默认的是将内容逆时针旋转90°，也可以传入 clockwise 参数，改变旋转方向
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.14
+```
+
