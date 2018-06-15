@@ -3751,3 +3751,127 @@ dbltopnumber （默认为2） 在双栏排版中，横跨双栏顶部浮动体�
 % 2018.6.14
 ```
 
+
+
+```latex
+% 如何将4个图拼接成为一个图
+\documentclass{article}
+
+\usepackage{tikz} % 使用 tikz 宏包
+\usetikzlibrary{positioning} % 使用 positioning 库
+
+\begin{document}
+\begin{tikzpicture} % 需要使用 tikzpicture 环境作图
+\scope[nodes={inner sep=0,outer sep=0}]
+\node[anchor=south east] (a) % 设置锚点，应该设置在4幅图中点，(a)表示对节点命名为 a ；但是实际上，锚点位置好像与 anchor 设置的位置相反
+  {\includegraphics[width=4cm]{example-grid-100x100bp.png}};
+\node[anchor=south west] (b)
+  {\includegraphics[width=4cm]{example-image-1x1}};
+\node[anchor=north east] (c)
+  {\includegraphics[width=4cm]{example-image-1x1}};
+\node[anchor=north west] (d)
+  {\includegraphics[width=4cm]{example-grid-100x100bp.png}};
+\node[right=1mm of b] (e) % 在节点 b 右侧 1mm 处添加节点 e
+  {\includegraphics[height=4cm]{example-image-4x3}};
+\node[below=2mm of c.south west,anchor=north west] (f)
+  {\includegraphics[width=8cm]{example-image-16x9}};
+\endscope
+\foreach \n in {a,b,c,d} { % 类似于循环命令
+  \node[anchor=north west,fill=yellow] at (\n.north west) {(\n)};
+}
+\node[anchor=north east,fill=green] at (e.south east) {(e)};
+\node[anchor=south west,fill=green] at (f.south east) {(f)};
+\end{tikzpicture}
+
+\end{document}
+```
+
+```latex
+% 如何让段落上下文间距相等
+% 由于设置 \fontsize 或 \baselineskip 或比例系数后，并且行距定义为基线之间的距离，添加浮动体或其他内容后，往往导致其上下空白间距不同
+% 示例
+\documentclass{article}
+\usepackage{graphicx}
+\setlength\intextsep{0pt} % 设置间距为 0pt
+
+\begin{document}
+\noindent\rule{\linewidth}{1pt}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.5\linewidth]{example-image.pdf}
+\caption{example-image}
+\end{figure}
+\noindent\rule{\linewidth}{1pt}
+\end{document}
+
+% 通过编译后可以看到，浮动体底部与正文将存在一定的距离，不是设置的 0pt ，这个间距是 Tex 中插入行间 glue 产生的，按通常做法，需要在浮动体下方文字之间设置 \nointerlineskip 加以抑制
+% glue 的做法是用"厚度"为 \baselineskip-\prevdepth 的 glue 将后文内容添加到垂直列的底部，但由于后文是段落的首行，往往会添加厚度为 \parskip 的 glue
+
+% 添加 \nointerlineskip 做法
+\documentclass{article}
+\usepackage{graphicx}
+\setlength\intextsep{0pt}
+
+\begin{document}
+\noindent\rule{\linewidth}{1pt}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.5\linewidth]{example-image.pdf}
+\caption{example-image}
+\end{figure}
+\nointerlineskip % 抑制行间距
+\noindent\rule{\linewidth}{1pt}
+\end{document}
+
+% -------------------------------------------------------------------------------------------------
+% 但由于添加的浮动体很有可能浮动到别的地方，此时的主要困难变为找到具体添加 \nointerlineskip 的位置，下文给出了向西解释和方法
+\documentclass{article}
+\usepackage{graphicx}
+\setlength\intextsep{0pt}
+\usepackage{etoolbox}
+\makeatletter
+%% http://tex.stackexchange.com/a/40363
+\patchcmd{\@addtocurcol}
+  {\vskip \intextsep}
+  {\edef\save@first@penalty{\the\lastpenalty}\unpenalty
+   \ifnum \lastpenalty = \@M  % hopefully the OR penalty
+     \unpenalty
+   \else
+     \penalty \save@first@penalty \relax % put it back
+   \fi
+   \ifnum\outputpenalty <-\@Mii
+     \addvspace\intextsep
+     \vskip\parskip
+   \else
+     \addvspace\intextsep
+   \fi}
+  {\typeout{*** SUCCESS ***}}{\typeout{*** FAIL ***}}
+\patchcmd{\@addtocurcol}
+  {\vskip\intextsep \ifnum\outputpenalty <-\@Mii \vskip -\parskip\fi}
+  {\ifnum\outputpenalty <-\@Mii
+     \aftergroup\vskip\aftergroup\intextsep
+     \aftergroup\nointerlineskip
+   \else
+     \vskip\intextsep
+   \fi}
+  {\typeout{*** SUCCESS ***}}{\typeout{*** FAIL ***}}
+\patchcmd{\@getpen}{\@M}{\@Mi}
+  {\typeout{*** SUCCESS ***}}{\typeout{*** FAIL ***}}
+\makeatother
+
+\begin{document}
+\noindent\rule{\linewidth}{1pt}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.5\linewidth]{example-image.pdf}
+\caption{example-image}
+\end{figure}
+\noindent\rule{\linewidth}{1pt}
+\end{document}
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.15
+```
+
