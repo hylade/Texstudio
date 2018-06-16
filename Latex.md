@@ -3875,3 +3875,164 @@ dbltopnumber （默认为2） 在双栏排版中，横跨双栏顶部浮动体�
 % 2018.6.15
 ```
 
+
+
+```latex
+% 如何在 Latex 中关联多幅图像
+% 由于在论文书写过程中，往往需要对插入图片的细节进行说明，此时的做法一般是将细节部分进行放大，并将细节与原图进行关联
+% 一般通过以下三歩完成操作
+1.插入原图，并绘制标注框
+2.插入局部放大子图
+3.绘制局部图与标志区域关联线
+
+% 关键技术在于在插入图像上进行绘图操作
+
+% 代码示例
+\documentclass{article}
+\usepackage{mwe,subcaption,tikz} % mwe 宏包用于生成示例图片
+\tikzset{boximg/.style={remember picture,red,thick,draw,inner sep=0pt,outer sep=0pt}} % \tikzset 用于样式设定；选项 remember picture 用于尝试记住当前图片在页面上的位置 
+
+\begin{document}
+	\begin{figure}
+ 		\centering
+ 			%插入原图
+ 			\begin{subfigure}{.55\linewidth}
+   			\begin{tikzpicture}[boximg]
+   			\node[anchor=south west] (img) {\includegraphics[width=\linewidth]{example-image}};
+   				\begin{scope}[x={(img.south east)},y={(img.north west)}]
+       		% 建立相对坐标系,辅助标注框定位
+       		\draw[help lines,xstep=.1,ystep=.1] (0,0) grid (1,1); % 添加 help lines 表示使用之前设定的线的类型等； xstep ， ystep 用于设定 x ， y 的偏移量，也就是网格的尺寸
+      		\foreach \x in {0,1,...,9} { \node [anchor=north] at (\x/10,0) {0.\x}; }
+       		\foreach \y in {1,...,9} { \node [anchor=east] at (0,\y/10) {0.\y}; }
+       		% 用于给坐标系标数值； \foreach 用于循环； "anchor = north" 说明数值在坐标系的下方； () 用于确定 anchor 的位置； {} 用于确定数值
+   			\end{scope}
+
+   				\begin{scope}[x=(img.south east),y=(img.north west)]
+       		\node[draw,minimum height=1.6cm,minimum width=1.00cm] (B1) at (0.2,0.60) {};
+       		\node[draw,minimum height=0.8cm,minimum width=0.50cm] (B2) at (0.7,0.25) {};
+       		\node[draw,minimum height=0.4cm,minimum width=0.25cm] (B3) at (0.9,0.10) {};
+   				\end{scope} % minimum 用于确定最小尺寸
+   			\end{tikzpicture}
+   		\caption{}
+ 			\end{subfigure}\\[0.5\baselineskip]
+
+ 			% 插入图片局部放大图
+ 			% 注意，相邻两个放大图之间不应该换行，不然会造成放大图不在同一行的不美观效果
+ 			\begin{subfigure}{.55\linewidth}
+   			\begin{tikzpicture}[boximg]
+     				\node (img1) {\includegraphics[width=0.3\linewidth]{example-image-10x16}};
+     				\draw (img1.south west) rectangle (img1.north east); % 在图片外绘制红框
+   			\end{tikzpicture}\hfill
+   			\begin{tikzpicture}[boximg]
+     				\node (img2) {\includegraphics[width=0.3\linewidth]{example-image-10x16}};
+     				\draw (img2.south west) rectangle (img2.north east);
+   			\end{tikzpicture}\hfill
+   			\begin{tikzpicture}[boximg]
+    	 			\node (img3) {\includegraphics[width=0.3\linewidth]{example-image-10x16}};
+     				\draw (img3.south west) rectangle (img3.north east);
+   			\end{tikzpicture}
+  			\caption{}
+	 		\end{subfigure}
+
+	 	% 绘制连接性
+	\begin{tikzpicture}[overlay,boximg] % 当在本图中需要使用其他图中的点时，需要添加 option ，即 overlay
+   		\draw (B1) -- (img1);
+   		\draw (B2) -- (img2);
+   		\draw (B3) -- (img3);
+ 		\end{tikzpicture}
+ 	\caption{Connection to Subfigure}
+\end{figure}
+\end{document}
+```
+
+```latex
+% 将浮动图放置在文章末尾
+% 通常期刊中都要求将图表和正文分开，放在文章末尾，再交叉引用，说明图表的作用
+% 需要达到这种目的，可以通过使用 endfloat 宏包完成
+
+% 调用 endfloat 宏包只需要使用 \usepackage 命令即可
+\usepackage[options]{endfloat}
+
+% 示例
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{endfloat}
+\usepackage{mwe}
+\begin{document}
+\lipsum[1-5]
+\begin{figure}[!htb]
+\centering
+\includegraphics[width = 0.8\linewidth]{example-image-a}
+\caption{Dummy Figure A}\label{fig:example-image-a}
+\end{figure}
+
+\lipsum[6-10]
+\begin{figure}[!htb]
+\centering
+\includegraphics[width = 0.8\linewidth]{example-image-b}
+\caption{Dummy Figure B}\label{fig:example-image-b}
+\end{figure}
+
+\lipsum[11-15]
+\end{document}
+
+% mwe 宏包 和 \lipsum 命令是用来产生随机文字的； example-image 则是通过 mwe 宏包提供的示例图片
+% 通过编译可见，浮动体图都在文章末尾被输出，正文相应部分则被 [Figure 1 about here.] 代替，同时在输出图片时，还调用了 \listoffigures 命令，生成了相应的图片清单
+
+% 对于 endfloat 宏包的 option 选项
+% 默认情况下， endfloat 宏包会调用 \listoffigures 和（或） \listoftables 生成图表清单，可以通过以下选项进行控制：
+1. figlist / nofiglist 为互补选项，默认打开 figlist ,即出图片清单
+2. tablist / notablist 为互补选项，默认打开 tablist ,即出表格清单
+3. lists / nolists 为互补选项，默认打开 lists ,即出图表清单
+
+% 当需要去除上述示例中的图片清单时，可以通过下述代码实现：
+\usepackage[nofiglist]{endfloat}
+
+% 在输出图表之前，有时候也想输出一个章节标题，从而传达"从此处开始都是图片"之类的意思，同样，endfloat 宏包也提供了相应的控制选项
+1. fighead / nofighead 为互补选项，默认打开 nofighead ,即不输出图片章节标题
+2. tabhead / notabhead 为互补选项，默认打开 notabhead ,即不输出表格章节标题
+3. heads / noheads 为互补选项，默认打开 noheads ,即不输出章节、图片章节标题
+
+% 当需要输出图片标题时，可以通过下述代码实现：
+\usepackage[fighead]{endfloat}
+
+% 对于正文中相应位置的生成的 [Figure 1 about here.] 记号，由 markers / nomarkers 控制，默认打开 markers 选项，即生成标记
+
+% 默认情况下，图表都会处理，将在文章末尾输出，当只需要进行单一类型的处理时，可以通过下述代码实现：
+1. tablesonly：只处理表格，图片保持原样
+2. figuresonly：只处理图片，表格保持原样
+
+% 默认情况下， endfloat 宏包先输出图片，后输出表格，若想改变这个顺序，可以通过下述选项控制：
+figuresfirst / tablesfirst ：控制图表输出的顺序，默认打开 figuresfirst ，即先输出图片，再输出表格
+% 注意：当开启了 \tableonly 或者 \figureonly 的时候，该选项将不具有意义
+
+% -------------------------------------------------------------------------------------------------
+% 修改 endfloat 宏包的默认行为
+% 对于 endfloat 宏包，可以修改其记号样式，章节标题，图表放置方式等
+
+% 对于代替图表而生成的记号样式，可以通过修改 \figureplace 实现
+\renewcommand{\figureplace}{\begin{center}
+  [\figurename~\thepostfigure. 在这里]
+\end{center}}
+% 由于使用中文字体，此时文档类型需要改为 ctexart 格式
+\documentclass[UTF8]{ctexart}
+% 注意： \figurename 表示图片标题的 label 内容，在 ctexart 中默认为"图"； \thepostfigure 则记录了相应的编号
+
+% 修改章节标题内容
+% 当开启 fighead 或者 tabhead 时，在输出图表之前，便会打印相应的章节标题，用于提示后续内容，在 endfloat 中默认打印 Figures 和 Tables
+% 修改标题内容，需要通过更改 \figuresection 和 \tablesection 两个宏
+% 示例
+\renewcommand{\figuresection}{本文的插图}
+\renewcommand{\tablesection}{本文的表格}
+
+% 默认情况下， endfloat 宏包让单个图表单独输出于一页，但有时候想排版美观，类似普通浮动体输出
+% 原因在于， endfloat 在输出每个浮动体后，将调用 \efloatseparator 命令，默认情况下，命令定义为 \claerpage ，也就是说，输出单个浮动体后，立即刷新至下一页
+% 若希望单页容纳多张图表，可以将相应的 \efloatseparator 命令修改为 \relax 即可
+\renewcommand{\efloatseparator}{\relax}
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.16
+```
+
