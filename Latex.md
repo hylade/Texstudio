@@ -4036,3 +4036,121 @@ figuresfirst / tablesfirst ：控制图表输出的顺序，默认打开 figures
 % 2018.6.16
 ```
 
+
+
+```latex
+$ tikz 绘图技巧
+% 当需要绘制的 node labels 需要在 node 位置之下，而非 node 之中时
+% 可以通过在 node 选项之中添加 label 即可
+\documentclass{article}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}
+\fill (0,0) circle (0.05) node[below,draw]{$b_1$}; % 1
+\fill (1,0) circle (0.05) node[label=below:$b_1$,draw]{}; % 2
+\end{tikzpicture}
+\end{document}
+
+% 如何使 node 中的内容或者label 换行
+% 可以通过在 node 选项中加入 align = center ，然后使用换行符 \ 即可
+\documentclass[]{minimal} % minimal 文档类是较少使用的一种，只有基本字体和纸张大小设置，通常用于调试
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning} % automata 库用于绘制有限状态自动机和图灵机的形状和样式；绘制时需要节点选项中存在 state ；对于放置状态，可以通过相对位置或者绝对位置控制，如 above of 或者 right of ；不同的节点需要使用不同的名称；对于最初的状态，需要添加 initial 选项；当完成布置后，可以添加 edge 功能，对于环形，可以通过 edge[loop] 完成；
+% positioning 库用来绘制和定位 node
+
+\begin{document}
+\begin{tikzpicture}[shorten >=1pt,node distance=5cm,on grid,auto] % auto 选项可以移动节点使其不在曲线上； shorten 用于缩短线条端头处的长度，使其不超过节点，只会与相应的节点接触，"shoren <=" 与 "shorten >=" 具有相同的效果，只是前者作用于线条的起始点处； node distance 用于控制节点之间的距离，注意，此处的距离是对于相应节点中心之间的距离，并不是边界之间的距离；
+% 具体设置在这里
+\node[state,initial] (q_0) {$q_0$}; 
+\path[->] (q_0) edge[loop above] node[text width=1cm,align=center] {0,1,2\\3,4,5} (q_0);  % 通过 align = center 及 换行符控制节点换行
+\end{tikzpicture}
+\end{document}
+
+% 如何将多个 node 设置为一样的大小
+% 通过设置 scope 中 minimum size 与 inner sep 即可
+\documentclass[11pt,tikz,border=2pt]{standalone}
+    \usetikzlibrary{positioning}
+    \begin{document}
+     \begin{tikzpicture}[scale=5]
+      \begin{scope}[auto, every node/.style={draw,circle,minimum size=2em,inner sep=1},node distance=2cm] % minimum seize 用于控制最小节点大小，实际上，在节点内容（ Text ，数字等）周围实际自动存在空白，可以通过 inner sep 进行调整修改，对于最小节点，可以设置 inner sep = 0 ，此处为 1 ；
+        \node(v1) at (0,0){1};
+        \node[above=of v1] (v2) {2};
+        \node[above=of v2] (v3) {3};
+        \node[right=of v1] (v4) {4};
+        \node[above=of v4] (v5) {5};
+        \node[above=of v5] (v6) {6};
+        \node[right=of v4] (v7) {7};
+        \node[above=of v7] (v8) {8};
+        \node[above=of v8] (v9) {9};
+        \node[right=of v7 ,] (v10) {10};
+        \node[above=of v10] (v11) {11};
+        \node[above=of v11,] (v12) {12};
+      \end{scope}
+     \end{tikzpicture}
+    \end{document}
+    
+% 设置 node 之间的位置和距离
+% 可以通过在 node 中加入 [below right = 0.7 cm and 4 cm of A] 等选项或者 xshift 与 yshift 参数即可
+% 示例1
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\begin{document}
+\begin{tikzpicture}
+  [align=center,node distance=2cm]  %< no need of this global node separation
+  \node[label=above:A] (A) % 前一个 A 是节点标记（可见），后一个是节点名称（不可见）         
+       {(1)};
+  \node[label=above:B1] (B1) [above right=0.7cm and 4cm of A]
+       {($m+1$)};
+  \node[label=above:B2] (B2) [below right=0.7cm and 4cm of A]
+       {($m+1$)};
+  \node[label=above:C] (C)  [below right=0.7cm and 4cm of B1]
+       {($2m-1$)};
+\end{tikzpicture}
+\end{document}
+
+% 示例2
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+\begin{tikzpicture}[state/.style={draw=red,ultra thick,rectangle,rounded corners}]
+ \node[state] (q3)  {$test$}; 
+ \node[state] (q4) [below left of=q3] {$homing$}; 
+ \node[state] (q5) [below left of=q3,xshift=-2cm] {$homing1$}; 
+\end{tikzpicture}
+\end{document}
+
+% 通过循环按照步长生成多个图
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+\begin{tikzpicture}
+\tikz 
+\foreach \x in {0,1,...,3} 
+\draw (\x,0) circle (0.2cm);
+\end{tikzpicture}
+\end{document}
+
+% 此时将产生沿 x 轴，步长为 1 的4个圆形
+% \foreach 实际表达为：
+\foreach \x in {1,2,...,6} {\x, } yields 1, 2, 3, 4, 5, 6,
+\foreach \x in {1,2,3,...,6} {\x, } yields 1, 2, 3, 4, 5, 6,
+\foreach \x in {1,3,...,11} {\x, } yields 1, 3, 5, 7, 9, 11,
+\foreach \x in {1,3,...,10} {\x, } yields 1, 3, 5, 7, 9,
+\foreach \x in {0,0.1,...,0.5} {\x, } yields 0, 0.1, 0.20001, 0.30002, 0.40002,
+\foreach \x in {a,b,9,8,...,1,2,2.125,...,2.5} {\x, } yields a, b, 9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 2.125, 2.25, 2.375, 2.5,
+\foreach \x in {1,...,6} {\x, } yields 1, 2, 3, 4, 5, 6,
+\foreach \x in {9,...,3.5} {\x, } yields 9, 8, 7, 6, 5, 4,
+% 对于 \y 用法相同
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.17
+```
+
