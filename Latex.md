@@ -4163,3 +4163,102 @@ $ tikz 绘图技巧
 % 2018.6.17
 ```
 
+
+
+```latex
+% 选择加载图片类型
+% 在 Latex 中，相同文件名加载图片的顺序是
+.png .pdf .jpg .mps .jpeg .jbig2 .jb2 .PNG .PDF .JPG .JPEG .JBIG2 .JB2
+% 所以当相同目录下同时含有 dummy.png 和 dummy.pdf ，编译器会先选用前者
+% 可以通过 \DelareGraphicsExtensions 命令来声明并改变这些拓展名的调用顺序，如
+\DeclareGraphicsExtensions{
+.png,.PNG,%
+.pdf,.PDF,%
+.jpg,.mps,.jpeg,.jbig2,.jb2,.JPG,.JPEG,.JBIG2,.JB2}
+
+% 同时 grfext 宏包提供的 \PrependGraphicsExtensions 命令能实现相同的效果：
+\usepackage{grfext}
+\PrependGraphicsExtensions*{.png,.PNG}
+```
+
+```latex
+% 限制浮动环境的浮动范围
+% 图片的浮动控制较为复杂，往往将图片放在一个小节范围内时，实际编之后却发现图片移动到了其他小节
+% 处理方法：使用 float 包里的强制 H 参数来限制浮动环境
+\begin{figure}[H}
+%put figure here.
+\end{figure}
+```
+
+```latex
+% 双栏排版时使通栏图表出现在页面底端
+% 当排版双栏文章时，由于图表较宽，需要将图或者表跨栏排版，此时需要使用到两个环境
+\begin{table*}[ht]
+\end{table*}
+
+\begin{figure*}[ht]
+\end{figure*}
+
+% 但这样的跨栏图表将放到顶部
+% 若是需要放置到底部，需要使用 stfloats 宏包，同时环境命令为：
+\begin{figure*}[bp] % 插入双栏图表时需要加入上标符号 "*"
+\end{figure*}
+
+\begin{table*}[bp]
+\end{table*}
+
+% 示例
+\documentclass[twocolumn]{book}
+\usepackage{graphicx}
+\usepackage{xcolor,stfloats}
+\usepackage{lipsum}%生成随机文本
+
+\begin{document}
+\lipsum
+\lipsum[2-5]
+\begin{figure*}[b]
+\centering
+\includegraphics[width=12cm]{image}
+\end{figure*}
+\lipsum[2-5]
+\lipsum
+\end{document}
+```
+
+```latex
+% 如何实现一张图等于另两个图的和
+% 可以通过小页环境及对齐参数 c 实现，也可以用表格环境来做
+\documentclass{article}
+
+\begin{document}
+\begin{figure}[htbp]
+	\begin{minipage}[c]{.3\textwidth}
+		\centering
+		\rule{3cm}{2cm}
+	\end{minipage}=
+	\begin{minipage}[c]{.3\textwidth}
+		\centering
+		\rule{3cm}{2cm}
+	\end{minipage}+
+	\begin{minipage}[c]{.3\textwidth}
+		\centering
+		\rule{3cm}{2cm}
+	\end{minipage}
+	\caption{{\footnotesize Left: Noisy data matrix;
+			Middle: Recovered data matrix by PSLAL; Right: Removed
+			noise.}}\label{fig1}
+\end{figure}	
+\end{document}
+```
+
+```latex
+% 去除子图下标注(a)等
+% 当使用 \subfigure[]{\label{fig:subfigure:1a} \includegraphics[] } 子图下将出现 \subfigure[] 中定义的名称，所以只要将 \subfigure[] 的中括号去掉即可
+% 由此，我们需要注意哪些是可选参数，哪些是必选参数
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.18
+```
+
