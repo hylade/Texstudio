@@ -4258,6 +4258,37 @@ $ tikz 绘图技巧
 ```
 
 ```latex
+% 如何设置图形表格与标题之间的距离
+% 当标题位于图形下方时，由于默认设置，此时，标题与图形之间有较大的空白，下方则不存在空白，此时可以将标题置于图形上方
+\begin{figure}
+\centering
+\caption{Caption Above Graphic}
+\includegraphics[width=2in]{graphic.eps}
+\end{figure}
+% 生成的标题和图形极为接近
+
+% 标题上下方的间距是由 \abovecaptionskip 和 \belowcaptionskip 来控制的，默认值分别是 10pt 和 0pt ，可以通过命令 \setlength 来修改
+\begin{figure}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{10pt}
+\centering
+\caption{Caption Above Graphic}
+\includegraphics[width=2in]{graphic.eps}
+\end{figure}
+% 此时，标题的上方不存在额外的空白，与图形间存在 10pt 的距离
+
+% 当文档中所有的标题都位于图形上方时，可以将命令直接放置在导言区，从而对整个文档产生作用，如：
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{10pt}
+% 当一部分标题要求位于浮动体上方时，可以新定义如下命令：
+\newcommand{\topcaption}{
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{10pt}
+\caption}
+% 当需要定义标题上方标题时，不适用 \caption 命令，而使用 \topcaption{} 命令即可
+```
+
+```latex
 % -------------------------------------------------------------------------------------------------
 % 2018.6.18
 ```
