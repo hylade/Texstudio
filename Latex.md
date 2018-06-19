@@ -4364,6 +4364,105 @@ $ tikz 绘图技巧
 ```
 
 ```latex
+% 设置图表编号和章节相关联
+\documentclass[11pt,a4paper]{book}
+\usepackage[font=small,labelfont={bf,sf},tableposition=top]{caption}
+\makeatletter
+\renewcommand{\thefigure}{\ifnum \c@chapter>\z@
+\thechapter-\fi \@arabic\c@figure}
+\renewcommand{\thetable}{\ifnum \c@chapter>\z@
+\thechapter-\fi \@arabic\c@table}
+\makeatother
+
+\begin{document}
+\chapter{One}
+\begin{figure}[!ht]
+\centering
+\rule{6.4cm}{3.6cm}
+\caption{Dummy figure}\label{fig:dummy}
+\end{figure}
+\chapter{Two}
+\begin{table}[!ht]
+\caption{Dummy table}\label{tab:dummy}
+\centering
+\rule{6.4cm}{3.6cm}
+\end{table}
+\end{document}
+
+% 对于上述代码
+\renewcommand{\thefigure}{\ifnum
+\c@chapter>\z@ \thechapter-\fi
+\@arabic\c@figure}
+% 等价于
+\renewcommand{\thefigure}{\thechapter-\arabic{figure}}
+```
+
+```latex
+% 若希望图片标题编号为 (a) 式样
+% 使用 subcaption 宏包即可
+\usepackage{subcaption}
+\begin{figure}[h]
+\centering
+\begin{minipage}{5cm}
+\includegraphics[scale=.15]{1.jpg}
+\subcaption{a}
+```
+
+```latex
+% 如何修改标题与图表之间的距离； float 宏包概述
+% 对于标题与图表的距离，前述也有，但此处使用 float 宏包，故再大致讲述一下
+% 仍使用 caption 宏包，修改 \captionsetup 命令即可
+\captionsetup[boxed]{skip=6pt}
+
+% 示例
+\documentclass{article}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{table}
+\usepackage[labelfont=bf]{caption}
+\captionsetup[boxed]{skip=6pt}
+
+\begin{document}
+\begin{table}[!ht] \def\B#1{$\displaystyle{n\choose#1}$}
+\begin{center} \begin{tabular}{c|cccccccc}
+$n$&\B0&\B1&\B2&\B3&\B4&\B5&\B6&\B7\\
+\hline
+0 & 1\\
+1 & 1&1\\
+2 & 1&2&1\\
+3 &
+1&3&3&1\\
+4 &
+1&4&6&4&1\\
+5 &
+1&5&10&10&5&1\\
+6 &
+1&6&15&20&15&6&1\\
+7 &
+1&7&21&35&35&21&7&1
+\end{tabular} 
+\end{center}
+\caption{Pascal's triangle. This is a re-styled \LaTeX\
+\texttt{table} with \texttt{skip=6pt}.}
+\end{table}
+\end{document}
+
+% 对于 float 宏包中的 \floatstyle 命令，可以确定默认的浮动样式；该浮动样式将适用于所有后续被 \newfloat 命令创建的浮动体直到新命令出现； \floatstyle 命令只有一个参数，即浮动体的类型
+% float 类型一般有以下四种：
+1. plain 该类型与正文基本没有差异，但是其标题一直将出现于浮动体下侧，无论标题位置
+2. plaintop 类型与 plain 基本一致，但是它将一直出现于浮动体上侧
+3. boxed 该类型将使浮动体在一个盒子中被输出，同时标题将位于盒子下侧
+4. ruled 该类型标题位于浮动体上侧，同时标题被线条包围，浮动体下侧也将有线条包围
+
+% \restylefloat 命令对于更改标准的图形和表格样式是必须的，这是因为图表的定义往往不是通过 \newfloat 来完成的，所以一般需要使用如下命令完成图表的定义
+\floatstyle{ruled} % 还有 plain ， plaintop ， boxed
+\restylefloat{table} % 也可是 figure 类
+
+% 对于 \def\B#1{$\displaystyle{n\choose#1}$} 是新定义一个命令，适用于 \B0&\B1&\B2&\B3&\B4&\B5&\B6&\B7
+% 当 Latex 碰到 \B0 时，将由 $\displaystyle{}$ 命令进行处理，生成公式，此处 \B 就是 n ，#1 则是每次碰到的不同的数字，同时，由 \choose 命令对上述两者进行处理，意思为 n 个中选择 #1 个
+```
+
+```latex
 % -------------------------------------------------------------------------------------------------
 % 2018.6.19
 ```
