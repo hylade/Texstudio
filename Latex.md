@@ -4293,3 +4293,78 @@ $ tikz 绘图技巧
 % 2018.6.18
 ```
 
+
+
+```latex
+% 如何更换图表标题格式中的连接符号
+% 需要使用 caption 宏包，示例如下：
+\usepackage{caption}
+\captionsetup{labelsep=space} % 此时图表的标题格式中的连接符号将为 ' ' ；也可以使用 labelsep = endash 使连接符号变为 '-' 等
+```
+
+```latex
+% 如何使 subfigure 子图具有双语标题
+% 示例
+\documentclass{ctexart}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\begin{document}
+\begin{figure}[htbp]
+	\centering
+	\subfigure{\label{第1个子图标签名}}\addtocounter{subfigure}{-2}
+	\subfigure[The 1st subfigure caption]{\subfigure[第1个子图标题]
+		{\includegraphics[width=0.4\textwidth]{1.jpg}}}
+	\subfigure{\label{第2个子图标签名}}\addtocounter{subfigure}{-2}
+	\subfigure[The 2nd subfigure caption]{\subfigure[第2个子图标题]
+		{\includegraphics[width=0.4\textwidth]{1.jpg}}}
+	\caption[总标签名]{}{中文总标题}{Fig.$\!$}{The total caption}
+	\vspace{-1em}
+\end{figure}	
+\end{document}
+
+% 由于需要使用中文字符，所以需要使用 ctexart
+% \addtocounter 把指定的值'加到'计数器上，这里是对 subfigure 计数器进行减 2 操作,这是因为每插入1个子图，就调用3次 \subfigure 命令
+% 第1次调用 \subfigure 命令用来生成紧随其后所插入子图的标签 （label） ，而之后的双层嵌套调用 \subfigure 命令用来插入子图并生成该子图的中英文标题。因此，每插入1张子图， subfigure 计数器的值就自动加3，为了使得子图的序号能每次加1，则需在每插入1张子图前手动把 subfigure 计数器的值减2。 \subfigure 命令的双层嵌套使用可用来生成中英文标题，其内层 \subfigure 命令用来插入子图并生成中文标题，外层 \subfigure 命令将插入的子图和中文标题作为一个整体，生成这个整体的英文标题，因此英文标题会置于中文标题的下面
+```
+
+```latex
+% figure 环境中自带的 'Figure 1' 等如何去除
+% 需要使用定义的 \caption{……} 中的内容，需要使用 caption 宏包
+\usepackage{caption}
+\caption*{the title of figure}
+```
+
+```latex
+% multicols 宏包插入图片丢失
+% 若使用 Latex 标准文档类的 twocolumn 模式，那么使用 figure 和 table 环境可以产生单列的浮动图形或者表格，但使用 figure* 和 table* 环境可以产生通栏的浮动图形或者表格；但若使用 multicol 宏包提供的 multicols 环境，figure 和 table 无法正常工作，会导致图形或者表格丢失，但此时 figure* 和 table* 仍能正常工作，产生通栏的浮动图形或者表格。
+% 要在 multicols 环境中使用单栏的图形或者表格，可以使用 float 宏包提供的 [H] 位置选项，如：
+\begin{figure}[H]
+…
+\caption{…}
+\end{figure}
+
+% 示例
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{multicol}
+\usepackage{float}
+\begin{document}
+\begin{multicols}{2}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.309\textwidth]{1.jpg}
+		\caption{图} \label{fig:1}
+	\end{figure}
+\end{multicols}
+
+\end{document}
+
+% 但需要注意，此时产生的对象是不能浮动的，是固定的，需要调整位置，以免造成分栏底部参差不齐
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.19
+```
+
