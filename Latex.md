@@ -4467,3 +4467,81 @@ $n$&\B0&\B1&\B2&\B3&\B4&\B5&\B6&\B7\\
 % 2018.6.19
 ```
 
+
+
+```latex
+% 如何实现三图并列排版
+\documentclass{article}
+\usepackage{array,graphicx,subfig}
+
+\begin{document}
+\begin{figure}[htb]
+\centering
+\begin{tabular}{m{0.30\textwidth}m{0.45\textwidth}} % 文字在垂直方向居中
+\begin{tabular}{m{0.30\textwidth}}
+\subfloat[small]{\includegraphics[width=0.3\textwidth]{1.jpg}}\\
+\subfloat[small]{\includegraphics[width=0.3\textwidth]{1.jpg}}
+\end{tabular}
+&\subfloat[large]{\includegraphics[width=0.45\textwidth]{1.jpg}}
+\end{tabular}
+\caption{Big caption}
+\end{figure}
+\end{document}
+```
+
+```latex
+% 如何定制特殊图片编号
+% 如在编号数字前添加自定义的字母、符号等，可以通过 \renewcommand 修改
+\renewcommand\thefigure{S\arabic{figure}}
+```
+
+```latex
+% 如何在图表标题中使用脚注
+\documentclass{article}
+\usepackage{nonfloat}
+\setlength\textwidth{240pt}
+\setlength\textheight{300pt}
+\begin{document}
+
+\listoftables
+
+\section{First example}
+
+The footnote for the caption goes below the
+table.\\[\intextsep] % \intextsep 用于开始新的一行，并在图形的前后加上垂直空白，空白大小可根据实际要求取
+
+\begin{minipage}{\textwidth}
+\centering
+
+\begin{tabular}{|c|}
+\hline Tabular stuff here \\ \hline
+\end{tabular}
+
+\tabcaption[Text of the caption (first example)]{Text of the caption (first example)\footnote{Text of the footnote (first example)}} % [] 中内容用于在 listoftables 中形成标题内容； {} 中内容用于形成图片标题内容； \footnote 会在添加命令位置添加脚注，并且 {} 中内容便是脚注内容
+\end{minipage}
+\\[\intextsep]
+
+\section{Second example}
+
+The footnote for the caption goes at the
+bottom.\\[\intextsep]
+
+\begin{minipage}{\textwidth}
+\centering
+\begin{tabular}{|c|}
+
+\hline Tabular stuff here \\ \hline
+\end{tabular}
+\tabcaption[Text of the caption (second example)]{Text of the caption (second example)\footnotemark} % \footnotemark 用于添加脚注，但是内容却由 \footnotetext 命令定义
+\end{minipage}
+\\[\intextsep]
+\footnotetext{Text of the footnote (second example)}
+
+\end{document}
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.21
+```
+
