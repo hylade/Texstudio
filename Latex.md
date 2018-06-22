@@ -4541,7 +4541,177 @@ bottom.\\[\intextsep]
 ```
 
 ```latex
+% 不浮动图形
+% 在 Latex 中使图形浮动，主要是为了增强排版效果，但是偶尔也希望一些图表不浮动，就置于源文件的相应的位置。 \caption 命令可以在 figure 和 table 环境中使用主要是因为这两个环境都各自定义了内部命令 \@captype
+% 同样，通过定义 \@captype 命令，就可以在 figure 和 table 环境外使用 \caption 命令，此时的 \caption 命令必须使用 \makeatletter-\makeatoher 包围起来，使 @ 可以在命令中使用
+% 示例
+\includegraphics{1.jpg}
+\makeatletter\def\@captype{figure}\makeatother
+\caption{This is the caption}
+
+% 若直接置于导言区，则使用命令会更加方便
+\makeatletter
+  \newcommand\figcaption{\def\@captype{figure}\caption}
+  \newcommand\tabcaption{\def\@captype{table}\caption}
+\makeatother
+
+% 通过上述代码，无论是否在图形环境中，都可以通过 \figcaption 命令得到图形标题；无论是否在表格环境中，都可以通过 \tabcaption 命令得到表格标题
+This is the text before the figure.\\[\intextsep]
+  \begin{minipage}{\textwidth}
+    \centering
+    \includegraphics[width=2in]{graphic.eps}%
+    \figcaption{This is a non-floating figure}
+    \label{fig:non:float}
+  \end{minipage}\\[\intextsep]
+This is the text after the figure.
+
+% 上述图形边为非浮动图形，对于非浮动图形，需要注意：
+1. 需要使用小页环境 （minipage） 来防止出现图形分页情况
+2. 命令 \\[\intextsep] 开始新的一行，并在图形前后加上空白；作用主要是使不浮动的图形具有浮动图形相同的上下间距
+3. 一般，浮动图形的顺序是固定的，但由于非浮动图形立即被固定在页面上，所以可能会出现图形顺序错误的现象；要摆满这种错误的发生，可以通过使用 \claerpage 或 \FloatBarrier 命令来清除未处理图形
+```
+
+```latex
 % -------------------------------------------------------------------------------------------------
 % 2018.6.21
+```
+
+
+
+```latex
+% Latex 修改 fbox 参数
+% 一般情况下，盒子由厚为 0.4pt 的直线围成，在框线与图形之间存在 3pt 的距离，这些维数值都可以通过 \setlength 命令设置
+% 在 Latex 中相关变量为 \fboxrule 和 \fboxsep
+% 示例
+\documentclass{article}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\begin{document}
+\begin{figure}
+	\centering
+	\setlength{\fboxrule}{5pt} % 修改线宽
+	\setlength{\fboxsep}{2cm} % 修改间距
+	\fbox{\includegraphics[totalheight=2in]{1.jpg}}
+	\caption{Graphic with Customized Box}
+	\label{fig:boxed_custom}
+\end{figure}
+\end{document}
+```
+
+```latex
+% 如何将图形与标题都置于盒子中
+% 要将图形和标题均置于盒子中，或许有人想直接将 \caption 命令放入 \fbox 命令中即可；但是，由于 \caption 命令只能在段落模式中使用，而 \fbox 命令中内容是在 LR 模式中被处理的，所以不能达到目的
+% 由于小页环境和 \parbox 命令中的内容都是当做在段落模式中处理，所以将 \fbox 命令的内容放入到小页环境或 \parbox 命令中，就可以将 \caption 包含在 \fbox 中，但由于小页环境和 \parbox 命令在使用时必须先指定它们的宽度，所以需要设置代码才能使 \fbox 和图形或标题具有一样宽度，不然两侧将出现无用空白
+% 示例（宽度不同）
+\documentclass{article}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\begin{document}
+\begin{figure}
+	\centering
+	\fbox{
+		\begin{minipage}{4 in}	
+			\centering
+			\includegraphics[totalheight=2in]{pend.eps}
+			\caption{Box Around Figure Graphic and Caption}
+			\label{fig:boxed_figure}
+	\end{minipage} }
+\end{figure}
+\end{document}
+
+% 若使用普通方法只能通过不断的尝试来修改确定小页环境的宽度从而使盒子能够恰好围住图形和标题，以下方法能避免枯燥的修改过程
+% 1. 选择一个确定的小页宽度，使图形和宽度与其相同
+\documentclass{article}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\begin{document}
+\begin{figure}
+	\centering
+	\fbox{
+		\begin{minipage}{4 in}	
+			\centering
+			\includegraphics[width = \textwidth]{pend.eps}
+			\caption{Box Around Figure Graphic and Caption}
+			\label{fig:boxed_figure}
+	\end{minipage} }
+\end{figure}
+\end{document}
+
+% 2. 当指定图形的高度时，适当的小页宽度可以将图形放入盒子中，然后计算盒子宽度满足要求
+\documentclass{article}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\begin{document}
+\newsavebox{\mybox} % \newsavebox 用于声明命令 \mybox ，它必须是一个尚未定义的命令名称，用于保存框
+\newlength{\mylength} % \newlength 用于将强制参数 \mylength 定义为初始值为 0pt 的长度命令，若长度命令 \mylength 已存在，将报错
+\sbox{\mybox}{\includegraphics[height=3in]{file.eps}} % \sbox  命令与 \mbox 命令类似，在文本框中排版文本，但是，不打印文本框，而是将其作用保存给一个 bin 命令，该命令必须通过 \newsavebox 定义
+\settowidth{\mylength}{\usebox{\mybox}} % \settowidth{\gnat}{text} 命令将设置 \gnat 命令的值等于 text 文本参数的宽度
+\begin{figure}
+	\centering
+	\fbox{
+		\begin{minipage}{\mylength}	
+			\centering
+			\usebox{\mybox}
+			\caption{Box Around Figure Graphic and Caption}
+			\label{fig:boxed_figure}
+	\end{minipage} }
+\end{figure}
+\end{document}
+
+% 但上述命令中 caption 中的内容过长时，将分为两行，且第二行不居中
+% 为保证标题只有一行，可以使用 \settowidth 命令来估计标题的宽度并将其作为小页的宽度
+% 只需将上述代码中的 
+\settowidth{\mylength}{\usebox{mybox}} 
+% 更改为
+\settowidth{\mylength}{Figure XX: Box Around Figure Graphic and Caption}
+```
+
+```latex
+% 修改标题字体
+% 当在 \usepackage{caption2} 中使用 scriptsize 、 Large 等选项时，将适用于标题标记和文本的字号
+% 当使用 up 、 it 、 sl 、 sc 、 md 、 bf 、 rm 、 sf 、 tt 选项时将只作用于标题标记
+% caption2 宏包也允许用户单独设置标题标记和文本字体
+% \captionfont 命令可用来设定标题的字体（包括标记和文本），而命令 \captionlabelfont 将只用于设定标题标记字体，若只想设定标题文本字体时，必须先使用 \captionfont 命令设定标题文本和标记字体，再用 \captionlabelfont 命令来设定标题标记的字体，包括取消由 \captionfont 设置的字体
+% 示例1
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{caption2}
+\begin{document}
+\begin{figure}
+	\renewcommand{\captionfont}{\Large \bfseries \sffamily}
+	\renewcommand{\captionlabelfont}{}
+	\centering
+	\includegraphics[width=2in]{1.jpg}
+	\caption{Test Caption}
+\end{figure}
+\end{document}
+
+% 上述示例中， \captionlabelfont 是空的，意味着没有改变标题缺省的字体属性和由命令 \captionfont 设定的标题标记的字体属性
+
+% 示例2
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{caption2}
+\begin{document}
+\begin{figure}
+	\renewcommand{\captionfont}{\Large \bfseries \sffamily}
+	\renewcommand{\captionlabelfont}{\small}
+	\centering
+	\includegraphics[width=2in]{1.jpg}
+	\caption{Test Caption}
+\end{figure}
+\end{document}
+
+% 在示例2中， \captionlabelfont 给出的 \small 属性覆盖了由 \captionfont 给定的 \Large 字号
+% 由于在 \captionlabelfont 中没有给出字形和字族，所以 \bfseries 和 \sffamily 将应用于标题标记
+```
+
+```latex
+% -------------------------------------------------------------------------------------------------
+% 2018.6.22
 ```
 
